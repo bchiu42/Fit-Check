@@ -44,9 +44,9 @@ public class Main extends Application {
 		args = this.getParameters().getRaw();
 
 		// used for testing
-		 table.insert(new Customer("Ben", "bchiu", "password"));
+		table.insert(new Customer("Ben", "bchiu", "password"));
 
-		Scene curScene = loginScreen(primaryStage);
+		Scene curScene = FileScene(primaryStage, null);
 		// Add the stuff and set the primary stage
 		primaryStage.setTitle(APP_TITLE);
 		primaryStage.setScene(curScene);
@@ -75,7 +75,7 @@ public class Main extends Application {
 	private Scene homeScreen(Stage primaryStage) {
 		// Create a horizontal box with Hello labels for each args
 		HBox hbox = new HBox();
-
+		
 		// creates a label
 		Label top = new Label("CS 400 MY First JavaFX Program");
 		// Creates the ComboBox for Left Panel
@@ -89,13 +89,11 @@ public class Main extends Application {
 //		ImageView headshot = new ImageView(me);
 		// Button for the bottom
 		Button exit = new Button("Done");
-		
-		MyHandler handler = new MyHandler(exit);
-		exit.setOnAction(handler);
+
 		// lambda function to avoid creating myHandler class
-//		exit.setOnAction((ActionEvent e) -> {
-//			primaryStage.close();
-//		});
+		exit.setOnAction((ActionEvent e) -> {
+			primaryStage.close();
+		});
 
 		// Checkbox for right
 		VBox checklist = new VBox();
@@ -123,7 +121,7 @@ public class Main extends Application {
 		// Creates all scenes
 		Scene homeScreen = homeScreen(primaryStage);
 		// creates a label
-		Label top = new Label("Returning User:");
+		Label top = new Label("Returning User");
 		top.setFont(new Font(30));
 		// Back for the bottom
 		Button backButton = new Button("back");
@@ -132,7 +130,7 @@ public class Main extends Application {
 		backButton.setOnAction((ActionEvent e) -> {
 			primaryStage.setScene(homeScreen);
 		});
-		//Creates the VBox for the functionality of the page
+		// Creates the VBox for the functionality of the page
 		VBox vBox = new VBox();
 		// empty space
 		Region spacer1 = new Region();
@@ -147,8 +145,7 @@ public class Main extends Application {
 		Label loginFailed = new Label("The UserID and Password combination was not found.");
 		loginFailed.setOpacity(0);
 		loginFailed.setTextFill(Color.RED);
-		MyHandler handler = new MyHandler(loginButton);
-		
+
 		loginButton.setOnAction((ActionEvent e) -> {
 			String user = userIDEnter.getText();
 			String pass = passwordEnter.getText();
@@ -159,7 +156,7 @@ public class Main extends Application {
 			}
 			loginFailed.setOpacity(100);
 		});
-		//TODO
+		// TODO
 //		if(((KeyEvent) userIDEnter.getOnKeyPressed()).getText().equals("ENTER"));
 //		userIDEnter.setOnKeyPressed((new KeyEvent()) -> {String user = userIDEnter.getText();
 //		String pass = passwordEnter.getText();
@@ -182,7 +179,58 @@ public class Main extends Application {
 
 	}
 
+	private Scene FileScene(Stage primaryStage, Customer customer) {
+		// Creates all scenes
+		Scene homeScreen = homeScreen(primaryStage);
+		// creates a label
+		Label top = new Label("File Upload");
+		top.setFont(new Font(30));
+		// Back for the bottom
+		Button backButton = new Button("back");
+		backButton.setMinSize(100, 50);
+		// lambda function to avoid creating myHandler class
+		backButton.setOnAction((ActionEvent e) -> {
+			primaryStage.setScene(homeScreen);
+		});
+		// Creates the VBox for the functionality of the page
+		VBox vBox = new VBox();
+		// empty space
+		Region spacer1 = new Region();
+		spacer1.setPrefHeight(30);
+		Label subtitle = new Label("Please Enter a JSON File name without the file type:");
+		TextField JSONEnter = new TextField();
+		Button loginButton = new Button("Login");
+		Region spacer2 = new Region();
+		spacer2.setPrefHeight(20);
+		Label loginFailed = new Label("The file was not found.");
+		loginFailed.setOpacity(0);
+		loginFailed.setTextFill(Color.RED);
+		loginButton.setOnAction((ActionEvent e) -> {
+			// opens JSON file and creates a new Customer from the data
+			String path = JSONEnter + ".JSON";
+			loginFailed.setOpacity(100);
+		});
+		// TODO
+//		if(((KeyEvent) userIDEnter.getOnKeyPressed()).getText().equals("ENTER"));
+//		userIDEnter.setOnKeyPressed((new KeyEvent()) -> {String user = userIDEnter.getText();
+//		String pass = passwordEnter.getText();
+//		if (table.login(user, pass)) {
+//			// Will need a way to give user page the correct user
+//			Scene userPage = userPage(table.getCustomer(user), primaryStage);
+//			primaryStage.setScene(userPage);
+//		}
+//		loginFailed.setOpacity(100);
+//	});
+		vBox.getChildren().addAll(spacer1, subtitle, JSONEnter, loginButton, spacer2, loginFailed);
+		// Main layout is Border Pane example (top,left,center,right,bottom)
+		BorderPane root = new BorderPane();
 
+		root.setTop(top);
+		root.setCenter(vBox);
+		root.setBottom(backButton);
+		return new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	}
 
 	/**
 	 * @param args
@@ -191,4 +239,3 @@ public class Main extends Application {
 		launch(args);
 	}
 }
-
