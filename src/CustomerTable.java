@@ -1,3 +1,5 @@
+import java.rmi.NoSuchObjectException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
@@ -20,11 +22,13 @@ Lecture 001
 public class CustomerTable {
 	private Hashtable<String, Customer> table;
 	private Customer currentCustomer;
+	private ArrayList<String> IDs = new ArrayList<String>();
 	public CustomerTable() {
 		table = new Hashtable<String, Customer>();
 	}
 	public void insert(Customer newEntry) {
 		table.put(newEntry.getCustomerID(), newEntry);
+		IDs.add(newEntry.getCustomerID());
 	}
 	public boolean login(String ID, String password) {
 		Customer temp = table.get(ID);
@@ -70,5 +74,23 @@ public class CustomerTable {
 		currentCustomer.addShared(receiveID);
 		return true;
 		}
+	public Customer getCustomer(String user) {
+		return table.get(user);
+	}
+	public boolean contains(String text) {
+		if(table.containsKey(text)) return true;
+		return false;
+	}
+	public void setCurrentCustomer(Customer customer) throws NoSuchObjectException {
+		if(!table.contains(customer)) {
+			throw new NoSuchObjectException("customer being set is not in table");
+		}
+		currentCustomer = customer;
+	}
+	public void printIDs() {
+		for(String e: IDs) {
+		}
+		
+	}
 
 }
