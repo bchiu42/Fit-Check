@@ -3,8 +3,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.rmi.NoSuchObjectException;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +24,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -38,23 +49,39 @@ public class Main extends Application {
 	// the same next scene
 	// and so the previous Scene has to be saved to return to
 	private Scene prevScene;
+	private Scene curNewUserScene;
 	private static final int WINDOW_WIDTH = 800;
 	private static final int WINDOW_HEIGHT = 640;
 	private static final String APP_TITLE = "Ateam Scene 5";
 	private CustomerTable table = new CustomerTable();
 
 	private Scene baseScreen(Stage primaryStage) {
+		// creates sample user for testing purposes
+		// TODO remove
+		Customer ben = new Customer("ben", "b1", "password");
+		Customer david = new Customer("david", "d1", "password");
+		Customer stan = new Customer("stan", "s1", "password");
+		Customer ethan = new Customer("ethan", "e1", "password");
+
+		ben.addReceived("d1");
+		ben.addReceived("s1");
+		ben.addReceived("e1");
+		table.insert(ben);
+		table.insert(david);
+		table.insert(stan);
+		table.insert(ethan);
+		System.out.println(table.getSize());
 		VBox v = new VBox();
 
 		Label l = new Label("Welcome!");
 		Button retb = new Button("Returning");
 		Button newb = new Button("New");
-		Button fileb = new Button("File");
+//		Button fileb = new Button("File");
 
 		l.getTransforms().add(new Scale(3, 3, -155, -20));
 		retb.getTransforms().add(new Scale(2, 2, -320, -100));
 		newb.getTransforms().add(new Scale(2, 2, -348, -150));
-		fileb.getTransforms().add(new Scale(2, 2, -353, -200));
+//		fileb.getTransforms().add(new Scale(2, 2, -353, -200));
 
 		retb.setOnAction((ActionEvent e) -> {
 			primaryStage.setScene(loginScreen(primaryStage));
@@ -64,11 +91,11 @@ public class Main extends Application {
 			primaryStage.setScene(newUserScene(primaryStage));
 		});
 
-		fileb.setOnAction((ActionEvent e) -> {
-			primaryStage.setScene(FileScene(primaryStage, null));
-		});
+//		fileb.setOnAction((ActionEvent e) -> {
+//			primaryStage.setScene(fileScene(primaryStage, null));
+//		});
 
-		v.getChildren().addAll(l, retb, newb, fileb);
+		v.getChildren().addAll(l, retb, newb);
 		v.setSpacing(50);
 
 		BorderPane bp = new BorderPane();
@@ -109,48 +136,19 @@ public class Main extends Application {
 		spacer2.setPrefHeight(30);
 		Label errorLabel = new Label();
 		errorLabel.setTextFill(Color.RED);
-		VBox fields = new VBox();
-		fields.getChildren().addAll(name, nameField, userID, userIDField, pass, passField1, pass2, passField2, spacer2,errorLabel);
+		Region spacer3 = new Region();
+		spacer3.setPrefHeight(30);
+		Label JSONinfo = new Label("If you have a JSON file containing size information, click yes. "
+				+ " Otherwise you must manually enter size information.");
+		final ToggleGroup group = new ToggleGroup();
 
-		save.setOnAction((ActionEvent e) -> {
-			//Checks if entries are valid
-			String[] check = new String[3];
-			check[0] = nameField.getText();
-			check[1] = userIDField.getText();
-			check[2] = passField1.getText();
-			for(String field: check) {
-				if(field.length() == 0) {
-					errorLabel.setText("Please do not leave any fields Blank!");
-					return;
-				}
-				if(field.trim().length() ==0) {
-					errorLabel.setText("Please fill the fields with more than spaces!");
-					return;
-				}
-			}
-			if (!passField1.getText().equals(passField2.getText())) {
-				errorLabel.setText(
-						"Your second entry of your password did not match your first, please have them match!");
-				return;
-			}
-			if (table.contains(userIDField.getText())) {
-				errorLabel.setText("Sorry, that UserID has been taken, please chose another!");
-				return;
-			}
-			// if customer creation is valid
-			else {
-				Customer newCustomer = new Customer(nameField.getText(), userIDField.getText(), passField1.getText());
-				table.insert(newCustomer);
-				
-				try {
-					table.setCurrentCustomer(table.getCustomer(userIDField.getText()));
-				} catch (NoSuchObjectException e1) {
-					System.out.println("Setting Customer not in table, must Debug");
-				}
-				prevScene = newUserScene(primaryStage);
-				primaryStage.setScene(profileScene(primaryStage));
-			}
-		});
+		RadioButton yes = new RadioButton("yes");
+		RadioButton no = new RadioButton("no");
+		yes.setToggleGroup(group);
+		no.setToggleGroup(group);
+		VBox fields = new VBox();
+		fields.getChildren().addAll(name, nameField, userID, userIDField, pass, passField1, pass2, passField2, JSONinfo,
+				yes, no, spacer2, errorLabel);
 
 		h.getChildren().addAll(title, spacer1);
 		h.setSpacing(25);
@@ -166,10 +164,65 @@ public class Main extends Application {
 		h2.setSpacing(719);
 
 		BorderPane bp = new BorderPane();
-
 		bp.setTop(h);
 		bp.setCenter(fields);
 		bp.setBottom(h2);
+
+		save.setOnAction((ActionEvent e) -> {
+
+			// Checks if entries are valid
+			String[] check = new String[3];
+			check[0] = nameField.getText();
+			check[1] = userIDField.getText();
+			check[2] = passField1.getText();
+			for (String field : check) {
+				if (field.length() == 0) {
+					errorLabel.setText("Please do not leave any fields Blank!");
+					return;
+				}
+				if (field.trim().length() == 0) {
+					errorLabel.setText("Please fill the fields with more than spaces!");
+					return;
+				}
+			}
+			// checks if JSON button has been clicked
+			if (group.getSelectedToggle() == null) {
+				errorLabel.setText("Please answer the file passing question!");
+				return;
+			}
+			if (!passField1.getText().equals(passField2.getText())) {
+				errorLabel.setText(
+						"Your second entry of your password did not match your first, please have them match!");
+				return;
+			}
+			if (table.contains(userIDField.getText())) {
+				errorLabel.setText("Sorry, that UserID has been taken, please chose another!");
+				return;
+			}
+			// if customer creation is valid
+			else {
+				Customer newCustomer = new Customer(nameField.getText(), userIDField.getText(), passField1.getText());
+				// case if the user has a JSONfile
+				if (group.getSelectedToggle().toString().contains("yes")) {
+					errorLabel.setText("");
+					yes.setSelected(false);
+					prevScene = primaryStage.getScene();
+//					prevScene = new Scene(backup, WINDOW_WIDTH, WINDOW_HEIGHT);
+					primaryStage.setScene(fileScene(primaryStage, newCustomer));
+				}
+				// case if the user does not have a JSONfile
+				else {
+					table.insert(newCustomer);
+					try {
+						table.setCurrentCustomer(table.getCustomer(userIDField.getText()));
+					} catch (NoSuchObjectException e1) {
+						System.out.println("Setting Customer not in table, must Debug");
+					}
+					prevScene = newUserScene(primaryStage);
+					primaryStage.setScene(profileScene(primaryStage));
+				}
+			}
+		});
 
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
@@ -183,14 +236,21 @@ public class Main extends Application {
 		Label customer = new Label("Share with: ");
 		customer.getTransforms().add(new Scale(2, 2, -10, -10));
 
-		TextField user = new TextField();
+		TextField userID = new TextField();
 
-		user.setPrefSize(500, 50);
+		userID.setPrefSize(500, 50);
 
 		HBox h = new HBox();
-		h.getChildren().addAll(customer, user);
+		h.getChildren().addAll(customer, userID);
 		h.setSpacing(75);
-
+		Button share = new Button("Share");
+		share.setOnAction((ActionEvent e) -> {
+			if(table.contains(userID.getText())){
+				table.replace(userID.getText(),table.getCustomer(userID.getText()).addReceived(table.getCurrentCustomer().getCustomerID()));
+				table.replace(table.getCurrentCustomer().getCustomerID(),table.getCurrentCustomer().addShared(userID.getText()));
+				
+			}
+		});
 		Button back = new Button("Back");
 		back.getTransforms().add(new Scale(1.5, 1.5, 0, 25));
 		back.setOnAction((ActionEvent e) -> {
@@ -198,6 +258,7 @@ public class Main extends Application {
 		});
 
 		bp.setTop(h);
+		bp.setCenter(share);
 		bp.setBottom(back);
 
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -322,13 +383,12 @@ public class Main extends Application {
 		loginButton.setOnAction((ActionEvent e) -> {
 			String user = userIDEnter.getText();
 			String pass = passwordEnter.getText();
-			prevScene = loginScreen(primaryStage);
-			primaryStage.setScene(profileScene(primaryStage));
-//          if (table.login(user, pass)) {
+
+			if (table.login(user, pass)) {
 //              // Will need a way to give user page the correct user
-//              //Scene userPage = userPage(table.getCustomer(user), primaryStage);
-//              //primaryStage.setScene(userPage);
-//          }
+				prevScene = loginScreen(primaryStage);
+				primaryStage.setScene(profileScene(primaryStage));
+			}
 			loginFailed.setOpacity(100);
 		});
 		// TODO make hitting enter on textfield same as hitting button
@@ -346,7 +406,7 @@ public class Main extends Application {
 	}
 
 	// Scene 4
-	private Scene FileScene(Stage primaryStage, Customer customer) {
+	private Scene fileScene(Stage primaryStage, Customer customer) {
 		Label top = new Label("File Upload");
 		top.setFont(new Font(30));
 		// Back for the bottom
@@ -354,7 +414,7 @@ public class Main extends Application {
 		backButton.setMinSize(100, 50);
 		// lambda function to avoid creating myHandler class
 		backButton.setOnAction((ActionEvent e) -> {
-			primaryStage.setScene(baseScreen(primaryStage));
+			primaryStage.setScene(prevScene);
 		});
 		// Creates the VBox for the functionality of the page
 		VBox vBox = new VBox();
@@ -366,13 +426,28 @@ public class Main extends Application {
 		Button loginButton = new Button("Create");
 		Region spacer2 = new Region();
 		spacer2.setPrefHeight(20);
-		Label loginFailed = new Label("The file was not found.");
-		loginFailed.setOpacity(0);
+		Label loginFailed = new Label();
 		loginFailed.setTextFill(Color.RED);
+
 		loginButton.setOnAction((ActionEvent e) -> {
-			// opens JSON file and creates a new Customer from the data
 			String path = JSONEnter + ".JSON";
-			loginFailed.setOpacity(100);
+			try {
+				Object obj = new JSONParser().parse(new FileReader(path));
+				JSONObject jo = (JSONObject) obj;
+				customer.parseJSON(jo);
+				table.setCurrentCustomer(customer);
+				primaryStage.setScene(profileScene(primaryStage));
+
+			} catch (FileNotFoundException e1) {
+				loginFailed.setText("The file was not found.");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
 		});
 		// TODO add enter functionality
 		vBox.getChildren().addAll(spacer1, subtitle, JSONEnter, loginButton, spacer2, loginFailed);
@@ -401,12 +476,14 @@ public class Main extends Application {
 		});
 		// a list of string where the customers' names are stored
 		// TODO implement with data structure later.
-		String[] customers = { "Ben", "Ethan", "Stan", "David" };
-
+		;
+		ArrayList<String> customers = table.getCurrentCustomer().getReceived();
+		
 		// Iterate through each customer
-		for (int i = 0; i < customers.length; i++) {
-			String customerName = customers[i];
-			CheckBox customer = new CheckBox(customers[i]);
+		for (int i = 0; i < customers.size(); i++) {
+			System.out.println(customers.get(i));
+			String customerID = customers.get(i);
+			CheckBox customer = new CheckBox(table.getCustomer(customerID).getName());
 			vBox.getChildren().add(customer);
 			// handle the event when the check box is being selected
 			EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
@@ -417,7 +494,7 @@ public class Main extends Application {
 						// IMPORTANT
 						// call sharedProfileScene to change the scene to 8 with this customerName
 						// passed.
-						sharedProfileScene(primaryStage, customerName);
+						sharedProfileScene(primaryStage, customerID);
 					}
 				}
 			};
@@ -438,8 +515,9 @@ public class Main extends Application {
 	 * @param primaryStage
 	 * @param customer     customer name
 	 */
-	private void sharedProfileScene(Stage primaryStage, String customer) {
-		Text title = new Text("\t" + customer + "'s profile : \n");
+	private void sharedProfileScene(Stage primaryStage, String customerID) {
+		Customer curProfle = table.getCustomer(customerID);
+		Text title = new Text("\t" + curProfle.getName() + "'s profile : \n");
 		VBox vBox = new VBox();
 
 		// display this customer's sizes
