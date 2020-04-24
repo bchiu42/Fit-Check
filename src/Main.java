@@ -55,22 +55,10 @@ public class Main extends Application {
 	private static final String APP_TITLE = "Ateam Scene 5";
 	private CustomerTable table = new CustomerTable();
 
+	
 	private Scene baseScreen(Stage primaryStage) {
-		// creates sample user for testing purposes
-		// TODO remove
-		Customer ben = new Customer("ben", "b1", "password");
-		Customer david = new Customer("david", "d1", "password");
-		Customer stan = new Customer("stan", "s1", "password");
-		Customer ethan = new Customer("ethan", "e1", "password");
 
-		ben.addReceived("d1");
-		ben.addReceived("s1");
-		ben.addReceived("e1");
-		table.insert(ben);
-		table.insert(david);
-		table.insert(stan);
-		table.insert(ethan);
-		System.out.println(table.getSize());
+
 		VBox v = new VBox();
 
 		Label l = new Label("Welcome!");
@@ -248,7 +236,7 @@ public class Main extends Application {
 			if(table.contains(userID.getText())){
 				table.replace(userID.getText(),table.getCustomer(userID.getText()).addReceived(table.getCurrentCustomer().getCustomerID()));
 				table.replace(table.getCurrentCustomer().getCustomerID(),table.getCurrentCustomer().addShared(userID.getText()));
-				
+
 			}
 		});
 		Button back = new Button("Back");
@@ -481,7 +469,6 @@ public class Main extends Application {
 		
 		// Iterate through each customer
 		for (int i = 0; i < customers.size(); i++) {
-			System.out.println(customers.get(i));
 			String customerID = customers.get(i);
 			CheckBox customer = new CheckBox(table.getCustomer(customerID).getName());
 			vBox.getChildren().add(customer);
@@ -541,7 +528,19 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		args = this.getParameters().getRaw();
+		//Adds some users
+		Customer ben = new Customer("ben", "b1", "password");
+		Customer david = new Customer("david", "d1", "password");
+		Customer stan = new Customer("stan", "s1", "password");
+		Customer ethan = new Customer("ethan", "e1", "password");
 
+		ben.addReceived("d1");
+		ben.addReceived("s1");
+		ben.addReceived("e1");
+		table.insert(ben);
+		table.insert(david);
+		table.insert(stan);
+		table.insert(ethan);
 		Scene currScene = baseScreen(primaryStage);
 
 		// Add the stuff and set the primary stage
