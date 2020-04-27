@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import org.json.simple.JSONObject;
+
 /**
 Customer.java created by ben on XPS 15 in Fit Check    
 
@@ -32,13 +34,19 @@ public class Customer {
 	
 	public Customer(String name, String customerID, String password, ArrayList<String> shared,
 			ArrayList<String> recieved) {
-		super();
 		this.name = name;
 		CustomerID = customerID;
 		Password = password;
 		Shared = shared;
 		Received = recieved;
 	}
+	public Customer(String name, String customerID, String password) {
+		this.name = name;
+		CustomerID = customerID;
+		Password = password;
+		Shared = new ArrayList<String>();
+		Received = new ArrayList<String>();
+		}
 	
 	//Likely unnecessary, done through CustomerTable
 	/**
@@ -68,10 +76,25 @@ public class Customer {
 	public ArrayList<String> getReceived() {
 		return Received;
 	}
-	public void addReceived(String customerID2) {
+	public Customer addReceived(String customerID2) {
 		Received.add(customerID2);
+		return this;
 	}
-	public void addShared(String receiveID) {
-		Shared.add(receiveID);	}
+	public Customer addShared(String receiveID) {
+		Shared.add(receiveID);	
+		return this;
+	}
+	public void parseJSON(JSONObject jo) {
+		// TODO Auto-generated method stub
+		
+	}
+	public String getName() {
+		return name;
+	}
+	public void printReceived() {
+		for(String e: Received) {
+			System.out.println(e);
+		}
+	}
 	
 }
