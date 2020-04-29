@@ -1,3 +1,5 @@
+import java.rmi.NoSuchObjectException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
@@ -18,13 +20,33 @@ Lecture 001
  *
  */
 public class CustomerTable {
+	public Customer getCurrentCustomer() {
+		return currentCustomer;
+	}
 	private Hashtable<String, Customer> table;
 	private Customer currentCustomer;
+	private ArrayList<String> IDs = new ArrayList<String>();
+	private int size;
 	public CustomerTable() {
 		table = new Hashtable<String, Customer>();
+		size = 0;
 	}
-	public void insert(Customer newEntry) {
+	public boolean insert(Customer newEntry) {
+//		System.out.println(newEntry.getCustomerID()+ "try");
+//		System.out.println(size);
+		if(table.contains(newEntry.getCustomerID())) {
+			return false;
+		}
 		table.put(newEntry.getCustomerID(), newEntry);
+		IDs.add(newEntry.getCustomerID());
+		size++;
+		return true;
+	}
+	public int getSize() {
+		return size;
+	}
+	public void setSize(int size) {
+		this.size = size;
 	}
 	public boolean login(String ID, String password) {
 		Customer temp = table.get(ID);
@@ -70,5 +92,36 @@ public class CustomerTable {
 		currentCustomer.addShared(receiveID);
 		return true;
 		}
+	
+	
+	public Customer getCustomer(String user) {
+		return table.get(user);
+	}
+	/**
+	 * Checks if table contains a customerID
+	 * @param customerID
+	 * @return
+	 */
+	public boolean contains(String customerID) {
+		if(IDs.contains(customerID)) return true;
+		if(table.containsKey(customerID)) return true;
+		return false;
+	}
+	/**
+	 * Sets Current Customer
+	 * @param customer
+	 * @throws NoSuchObjectException if customer is not in the table
+	 */
+	public void setCurrentCustomer(Customer customer) throws NoSuchObjectException {
+		if(!table.contains(customer)) {
+			throw new NoSuchObjectException("customer being set is not in table");
+		}
+		currentCustomer = customer;
+	}
+	
+	public boolean replace(String oldCusID, Customer updatedCustomer) {
+		if(table.replace(oldCusID, updatedCustomer)==null)return false;
+		return true;
+	}
 
 }
