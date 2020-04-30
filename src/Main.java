@@ -261,10 +261,10 @@ public class Main extends Application {
 		Scale scale4 = new Scale(1.5, 1.5, 500, 25);
 
 		Button yourProfiles = new Button("Your Profiles");
-		Button logOut = new Button("Log Out");
-		Button share = new Button("Share");
 		Button edit = new Button("Edit");
-		Button delete = new Button("Delete");
+		Button back = new Button("Back");
+		Button save = new Button("Save");
+		Button share = new Button("Share");
 
 		share.setOnAction((ActionEvent e) -> {
 			primaryStage.setScene(shareScene(primaryStage));
@@ -274,9 +274,8 @@ public class Main extends Application {
 			primaryStage.setScene(sharedProfilesScene(primaryStage));
 		});
 
-		logOut.setOnAction((ActionEvent e) -> {
-			table.clearCurrentCustomer();
-			primaryStage.setScene(baseScreen(primaryStage));
+		back.setOnAction((ActionEvent e) -> {
+			primaryStage.setScene(prevScene);
 		});
 		Label customer = new Label("Customer: David Breiten");
 		Label shirt = new Label("Shirt");
@@ -290,8 +289,8 @@ public class Main extends Application {
 		shirt.setFont(Font.font("Arial", FontWeight.BOLD, 10));
 		pants.setFont(Font.font("Arial", FontWeight.BOLD, 10));
 
-		logOut.getTransforms().add(scale);
-		delete.getTransforms().add(scale3);
+		back.getTransforms().add(scale);
+		save.getTransforms().add(scale3);
 		edit.getTransforms().add(scale4);
 		share.getTransforms().add(new Scale(1.5, 1.5, -500, 25));
 		yourProfiles.getTransforms().add(scale2);
@@ -305,12 +304,12 @@ public class Main extends Application {
 		inseem.getTransforms().add(new Scale(1.3, 1.3, -20, -120));
 
 		StackPane bp = new StackPane();
-		bp.getChildren().addAll(logOut, share, yourProfiles, edit, customer, shirt, pants, sleeve, collar, fit, waist,
-				delete, inseem);
+		bp.getChildren().addAll(back, save, edit, yourProfiles, customer, shirt, pants, sleeve, collar, fit, waist,
+				share, inseem);
 
-		StackPane.setAlignment(logOut, Pos.BOTTOM_LEFT);
+		StackPane.setAlignment(back, Pos.BOTTOM_LEFT);
 		StackPane.setAlignment(edit, Pos.BOTTOM_RIGHT);
-		StackPane.setAlignment(delete, Pos.BOTTOM_RIGHT);
+		StackPane.setAlignment(save, Pos.BOTTOM_RIGHT);
 		StackPane.setAlignment(share, Pos.BOTTOM_LEFT);
 		StackPane.setAlignment(yourProfiles, Pos.CENTER);
 		StackPane.setAlignment(customer, Pos.TOP_LEFT);
@@ -461,10 +460,9 @@ public class Main extends Application {
 	 */
 	private Scene sharedProfilesScene(Stage primaryStage) {
 		Text title = new Text("\tProfiles shared with you : \n");
-		title.setFont(new Font(30));
 		VBox vBox = new VBox();
 		Button b = new Button("Return");
-		b.setFont(new Font(20));
+
 		b.setOnAction(actionEvent -> {
 			primaryStage.setScene(profileScene(primaryStage));
 		});
@@ -476,8 +474,7 @@ public class Main extends Application {
 		// Iterate through each customer
 		for (int i = 0; i < customers.size(); i++) {
 			String customerID = customers.get(i);
-			CheckBox customer = new CheckBox(table.getCustomer(customerID).getAnalytics());
-			customer.setFont(new Font(20));
+			CheckBox customer = new CheckBox(table.getCustomer(customerID).getName());
 			vBox.getChildren().add(customer);
 			// handle the event when the check box is being selected
 			EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
@@ -513,19 +510,16 @@ public class Main extends Application {
 		Customer curProfle = table.getCustomer(customerID);
 		Text title = new Text("\t" + curProfle.getName() + "'s profile : \n");
 		VBox vBox = new VBox();
-		title.setFont(new Font(30));
 
 		// display this customer's sizes
 		// TODO implement with data structure later
 		Text shirt = new Text("Shirts\n-sleeve : 32 in\n-fit : normal\n");
 		Text pants = new Text("Pants\n-waist : 32 in\n");
-		shirt.setFont(new Font(20));
-		pants.setFont(new Font(20));
 		vBox.getChildren().add(shirt);
 		vBox.getChildren().add(pants);
+
 		// Set stage basics
 		Button button = new Button("Return");
-		button.setFont(new Font(20));
 		button.setOnAction(actionEvent -> {
 			primaryStage.setScene(sharedProfilesScene(primaryStage));
 		});
@@ -534,6 +528,7 @@ public class Main extends Application {
 		primaryStage.setScene(scene8);
 		primaryStage.show();
 	}
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		args = this.getParameters().getRaw();
