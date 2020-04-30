@@ -27,6 +27,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -54,10 +55,9 @@ public class Main extends Application {
 	private static final int WINDOW_HEIGHT = 640;
 	private static final String APP_TITLE = "Ateam Scene 5";
 	private CustomerTable table = new CustomerTable();
+	private String[] measurements = new String[7];
 
-	
 	private Scene baseScreen(Stage primaryStage) {
-
 
 		VBox v = new VBox();
 
@@ -222,6 +222,8 @@ public class Main extends Application {
 		BorderPane bp = new BorderPane();
 
 		Label customer = new Label("Share with: ");
+		Label sucess = new Label("      if a user with that customerID exists, your sizes have been shared with them!");
+		sucess.setVisible(false);
 		customer.getTransforms().add(new Scale(2, 2, -10, -10));
 
 		TextField userID = new TextField();
@@ -233,9 +235,12 @@ public class Main extends Application {
 		h.setSpacing(75);
 		Button share = new Button("Share");
 		share.setOnAction((ActionEvent e) -> {
-			if(table.contains(userID.getText())){
-				table.replace(userID.getText(),table.getCustomer(userID.getText()).addReceived(table.getCurrentCustomer().getCustomerID()));
-				table.replace(table.getCurrentCustomer().getCustomerID(),table.getCurrentCustomer().addShared(userID.getText()));
+			sucess.setVisible(true);
+			if (table.contains(userID.getText())) {
+				table.replace(userID.getText(),
+						table.getCustomer(userID.getText()).addReceived(table.getCurrentCustomer().getCustomerID()));
+				table.replace(table.getCurrentCustomer().getCustomerID(),
+						table.getCurrentCustomer().addShared(userID.getText()));
 
 			}
 		});
@@ -244,9 +249,19 @@ public class Main extends Application {
 		back.setOnAction((ActionEvent e) -> {
 			primaryStage.setScene(profile);
 		});
-
+		Region spacer2 = new Region();
+		spacer2.setPrefHeight(300);
+		VBox center = new VBox();
+		HBox shareHelper = new HBox();
+		Region spacer3 = new Region();
+		spacer3.setPrefWidth(200);
+		shareHelper.getChildren().addAll(spacer3,share);
+		center.getChildren().addAll(spacer2, shareHelper, sucess);
+		Region spacer1 = new Region();
+		spacer1.setPrefWidth(150);
+		bp.setLeft(spacer1);
 		bp.setTop(h);
-		bp.setCenter(share);
+		bp.setCenter(center);
 		bp.setBottom(back);
 
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -254,17 +269,16 @@ public class Main extends Application {
 
 	// Scene 5
 	private Scene profileScene(Stage primaryStage) {
-
 		Scale scale = new Scale(1.5, 1.5, 0, 25);
 		Scale scale2 = new Scale(2, 2, 50, -150);
 		Scale scale3 = new Scale(1.5, 1.5, 40, 25);
 		Scale scale4 = new Scale(1.5, 1.5, 500, 25);
 
 		Button yourProfiles = new Button("Your Profiles");
-		Button edit = new Button("Edit");
-		Button back = new Button("Back");
-		Button save = new Button("Save");
+		Button logOut = new Button("Log Out");
 		Button share = new Button("Share");
+		Button edit = new Button("Edit");
+		Button delete = new Button("Delete");
 
 		share.setOnAction((ActionEvent e) -> {
 			primaryStage.setScene(shareScene(primaryStage));
@@ -274,28 +288,128 @@ public class Main extends Application {
 			primaryStage.setScene(sharedProfilesScene(primaryStage));
 		});
 
-		back.setOnAction((ActionEvent e) -> {
-			primaryStage.setScene(prevScene);
+		logOut.setOnAction((ActionEvent e) -> {
+			table.clearCurrentCustomer();
+			primaryStage.setScene(baseScreen(primaryStage));
 		});
-		Label customer = new Label("Customer: David Breiten");
+		measurements = table.getCurrentCustomer().getMeasurements();
+
+		Label customer = new Label("Customer: " + table.getCurrentCustomer().getName());
 		Label shirt = new Label("Shirt");
 		Label pants = new Label("Pants");
-		Label sleeve = new Label("Sleeve: 32in");
-		Label collar = new Label("Collar: 16in");
-		Label fit = new Label("Fit: Normal");
-		Label waist = new Label("Waist: 32in");
-		Label inseem = new Label("Inseem: 34in");
+		Label sleeve = new Label("Sleeve: ");
+		Label collar = new Label("Collar: ");
+		Label fit = new Label("Fit: ");
+		Label waist = new Label("Waist: ");
+		Label inseem = new Label("Inseem: ");
+		Label dress = new Label("Dress");
+		Label dsize = new Label("Size: ");
+		Label shoe = new Label("Shoe");
+		Label ssize = new Label("Size: ");
+		Label empty = new Label("Add some sizes so you can share!");
+		empty.setVisible(false);
+
+		edit.setOnAction((ActionEvent e) -> {
+			primaryStage.setScene(editScene(primaryStage));
+		});
+		boolean displayShirt = false;
+		boolean displayPants = false;
+		boolean displayDress = false;
+		boolean displayShoes = false;
+
+		if (!measurements[0].equals("0")) {
+			sleeve.setText("Sleeve: " + measurements[0] + " in");
+			sleeve.setVisible(true);
+			displayShirt = true;
+		} else {
+			sleeve.setVisible(false);
+		}
+		if (!measurements[1].equals("0")) {
+			collar.setText("Collar: " + measurements[1] + " in");
+			collar.setVisible(true);
+			displayShirt = true;
+		} else {
+			collar.setVisible(false);
+		}
+		if (!measurements[2].equals("-1")) {
+			fit.setText("Fit: " + measurements[2]);
+			fit.setVisible(true);
+			displayShirt = true;
+		} else {
+			fit.setVisible(false);
+		}
+		if (!measurements[3].equals("0")) {
+			waist.setText("Waist: " + measurements[3] + " in");
+			waist.setVisible(true);
+			displayPants = true;
+
+		} else {
+			waist.setVisible(false);
+		}
+		if (!measurements[4].equals("0")) {
+			inseem.setText("Inseem: " + measurements[4] + " in");
+			inseem.setVisible(true);
+			displayShirt = true;
+
+		} else {
+			inseem.setVisible(false);
+		}
+		if (!measurements[5].equals("0")) {
+			dsize.setText("Size: " + measurements[5]);
+			dsize.setVisible(true);
+			displayDress = true;
+
+		} else {
+			dsize.setVisible(false);
+		}
+		if (!measurements[6].strip().equals("0")) {
+			ssize.setText("Size: " + measurements[6]);
+			ssize.setVisible(true);
+			displayShoes = true;
+
+		} else {
+			ssize.setVisible(false);
+		}
+
+		if (!displayShirt) {
+			shirt.setVisible(false);
+		}
+		if (!displayPants) {
+			pants.setVisible(false);
+		}
+		if (!displayDress) {
+			dress.setVisible(false);
+		}
+		if (!displayShoes) {
+			shoe.setVisible(false);
+		}
+		if (!displayShirt && !displayPants && !displayDress && !displayShoes) {
+			System.out.println("yeet");
+			empty.setVisible(true);
+		}
 
 		shirt.setFont(Font.font("Arial", FontWeight.BOLD, 10));
 		pants.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		dress.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		shoe.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		empty.setFont(Font.font("Arial", FontWeight.BOLD, 10));
 
-		back.getTransforms().add(scale);
-		save.getTransforms().add(scale3);
+		logOut.getTransforms().add(scale);
+
+		delete.getTransforms().add(scale3);
 		edit.getTransforms().add(scale4);
+
 		share.getTransforms().add(new Scale(1.5, 1.5, -500, 25));
 		yourProfiles.getTransforms().add(scale2);
 		customer.getTransforms().add(new Scale(2, 2, -10, 0));
+
 		shirt.getTransforms().add(new Scale(1.5, 1.5, 0, 400));
+		dress.getTransforms().add(new Scale(1.5, 1.5, 200, 400));
+		empty.getTransforms().add(new Scale(1.5, 1.5, 100, 500));
+		shoe.getTransforms().add(new Scale(1.5, 1.5, 200, 0));
+		ssize.getTransforms().add(new Scale(1.3, 1.3, 250, -60));
+		dsize.getTransforms().add(new Scale(1.3, 1.3, 250, 600));
+
 		sleeve.getTransforms().add(new Scale(1.3, 1.3, -20, 600));
 		collar.getTransforms().add(new Scale(1.3, 1.3, -20, 530));
 		fit.getTransforms().add(new Scale(1.3, 1.3, -20, 460));
@@ -304,13 +418,12 @@ public class Main extends Application {
 		inseem.getTransforms().add(new Scale(1.3, 1.3, -20, -120));
 
 		StackPane bp = new StackPane();
-		bp.getChildren().addAll(back, save, edit, yourProfiles, customer, shirt, pants, sleeve, collar, fit, waist,
-				share, inseem);
-
-		StackPane.setAlignment(back, Pos.BOTTOM_LEFT);
-		StackPane.setAlignment(edit, Pos.BOTTOM_RIGHT);
-		StackPane.setAlignment(save, Pos.BOTTOM_RIGHT);
+		bp.getChildren().addAll(logOut, share, yourProfiles, edit, delete, customer, shirt, pants, sleeve, collar, fit,
+				waist, inseem, dress, dsize, ssize, shoe, empty);
 		StackPane.setAlignment(share, Pos.BOTTOM_LEFT);
+		StackPane.setAlignment(logOut, Pos.BOTTOM_LEFT);
+		StackPane.setAlignment(edit, Pos.BOTTOM_RIGHT);
+		StackPane.setAlignment(delete, Pos.BOTTOM_RIGHT);
 		StackPane.setAlignment(yourProfiles, Pos.CENTER);
 		StackPane.setAlignment(customer, Pos.TOP_LEFT);
 		StackPane.setAlignment(shirt, Pos.CENTER_LEFT);
@@ -320,23 +433,197 @@ public class Main extends Application {
 		StackPane.setAlignment(sleeve, Pos.CENTER_LEFT);
 		StackPane.setAlignment(waist, Pos.CENTER_LEFT);
 		StackPane.setAlignment(inseem, Pos.CENTER_LEFT);
+		StackPane.setAlignment(dress, Pos.CENTER_RIGHT);
+		StackPane.setAlignment(dsize, Pos.CENTER_RIGHT);
+		StackPane.setAlignment(shoe, Pos.CENTER_RIGHT);
+		StackPane.setAlignment(ssize, Pos.CENTER_RIGHT);
 
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 
-//  /**
-//   * Generates the userPage
-//   * 
-//   * @param customer
-//   * @return
-//   */
-//  private Scene userPage(Customer customer, Stage primaryStage) {
-//      BorderPane root = new BorderPane();
-//
-//      root.setTop(new Label(customer.getCustomerID()));
-//      return new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-//
-//  }
+	// Scene that pops up when someone is editing their data
+	private Scene editScene(Stage primaryStage) {
+		TextField[] fieldArr = new TextField[6];
+		for (int y = 0; y < 5; y++) {
+			fieldArr[y] = new TextField();
+			fieldArr[y].setMaxSize(75, 25);
+		}
+		TextField dresscb = new TextField();
+		dresscb.setMaxSize(75, 25);
+		ComboBox fitcb = new ComboBox();
+		fitcb.getItems().addAll("Classic", "Modern", "Slim");
+		fitcb.setMaxSize(100, 25);
+		Tooltip sleevett = new Tooltip("Enter sleeve length in inches");
+		fieldArr[0].setTooltip(sleevett);
+		Tooltip collartt = new Tooltip("Enter collar circumference in inches");
+		fieldArr[1].setTooltip(collartt);
+		Tooltip waisttt = new Tooltip("Enter waist circumference in inches");
+		fieldArr[2].setTooltip(waisttt);
+		Tooltip inseemtt = new Tooltip("Enter inseem length in inches");
+		fieldArr[3].setTooltip(inseemtt);
+		Tooltip shoett = new Tooltip("Enter shoe size (American)");
+		fieldArr[4].setTooltip(sleevett);
+		Tooltip fittt = new Tooltip("Choose favorite fit");
+		fitcb.setTooltip(fittt);
+		Tooltip dresstt = new Tooltip("Choose dress size");
+		dresscb.setTooltip(dresstt);
+
+		BorderPane bp = new BorderPane();
+		Button save = new Button("Save");
+		Button back = new Button("Back");
+		back.setOnAction((ActionEvent e) -> {
+			primaryStage.setScene(profileScene(primaryStage));
+		});
+
+		Label customer = new Label("Customer: David Breiten");
+		Label shirt = new Label("Shirt");
+		Label pants = new Label("Pants");
+		Label sleeve = new Label("Sleeve: ");
+		Label collar = new Label("Collar: ");
+		Label fit = new Label("Fit: ");
+		Label waist = new Label("Waist: ");
+		Label inseem = new Label("Inseem: ");
+		Label dress = new Label("Dress");
+		Label dsize = new Label("Size: ");
+		Label shoe = new Label("Shoe");
+		Label ssize = new Label("Size: ");
+		Label error = new Label("Please enter valid sizes only!");
+		error.setVisible(false);
+		error.setTextFill(Color.RED);
+		error.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		shirt.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		pants.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		dress.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		shoe.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+
+		error.getTransforms().add(new Scale(1.5, 1.5, 300, -450));
+		back.getTransforms().add(new Scale(1.5, 1.5, 0, 25));
+		save.getTransforms().add(new Scale(1.5, 1.5, 0, 25));
+		customer.getTransforms().add(new Scale(2, 2, -10, 0));
+		shirt.getTransforms().add(new Scale(1.5, 1.5, 0, -200));
+		pants.getTransforms().add(new Scale(1.5, 1.5, 0, -200));
+		dress.getTransforms().add(new Scale(1.5, 1.5, 300, -200));
+		shoe.getTransforms().add(new Scale(1.5, 1.5, 300, -385));
+		dsize.getTransforms().add(new Scale(1.3, 1.3, 420, -250));
+		ssize.getTransforms().add(new Scale(1.3, 1.3, 420, -560));
+
+		sleeve.getTransforms().add(new Scale(1.3, 1.3, -50, -250));
+		collar.getTransforms().add(new Scale(1.3, 1.3, -50, -250));
+		fit.getTransforms().add(new Scale(1.3, 1.3, -50, -250));
+
+		waist.getTransforms().add(new Scale(1.3, 1.3, -50, -250));
+		inseem.getTransforms().add(new Scale(1.3, 1.3, -50, -250));
+
+		fieldArr[1].setTranslateX(-5);
+		fitcb.setTranslateX(-25);
+		fieldArr[2].setTranslateY(45);
+		fieldArr[3].setTranslateY(45);
+		fieldArr[2].setTranslateX(-10);
+		fieldArr[3].setTranslateX(5);
+		dresscb.setTranslateX(-85);
+		dresscb.setTranslateY(-65);
+		fieldArr[4].setTranslateY(24);
+		fieldArr[4].setTranslateX(-85);
+
+		VBox v1 = new VBox();
+		v1.setSpacing(30);
+		VBox v2 = new VBox();
+		v2.setSpacing(30);
+		VBox v3 = new VBox();
+		v3.setSpacing(21.5);
+		HBox h = new HBox();
+		v1.getChildren().addAll(shirt, sleeve, collar, fit, pants, waist, inseem);
+		for (int i = 0; i < 4; i++) {
+			if (i == 2) {
+				v3.getChildren().add(fitcb);
+			}
+			v3.getChildren().add(fieldArr[i]);
+		}
+
+		v2.getChildren().addAll(dress, dsize, shoe, ssize, dresscb, error);
+
+		for (int j = 4; j < 5; j++) {
+			v2.getChildren().add(fieldArr[j]);
+		}
+		h.getChildren().addAll(back, save);
+		h.setSpacing(698);
+		v3.setTranslateX(25);
+		v3.setTranslateY(117);
+		bp.setTop(customer);
+		bp.setLeft(v1);
+		bp.setRight(v2);
+		bp.setBottom(h);
+		bp.setCenter(v3);
+		save.setOnAction((ActionEvent e) -> {
+			boolean nextScene = true;
+
+			// updates dress
+			if (!dresscb.getText().equals("")) {
+				measurements[5] = dresscb.getText().strip();
+				try {
+					Integer.parseInt(dresscb.getText().strip());
+				} catch (NumberFormatException ed) {
+					nextScene = false;
+				}
+
+			}
+			// updates Shirt Fit
+			if (fitcb.getValue() != null && !fitcb.getValue().equals("")) {
+				measurements[2] = (String) fitcb.getValue();
+
+			}
+			if (!fieldArr[0].getText().equals("")) {
+				measurements[0] = fieldArr[0].getText().strip();
+				try {
+					Integer.parseInt(fieldArr[0].getText().strip());
+				} catch (NumberFormatException ed) {
+					nextScene = false;
+				}
+			}
+			if (!fieldArr[1].getText().equals("")) {
+				measurements[1] = fieldArr[1].getText().strip();
+				try {
+					Integer.parseInt(fieldArr[1].getText().strip());
+				} catch (NumberFormatException ed) {
+					nextScene = false;
+				}
+			}
+			if (!fieldArr[2].getText().equals("")) {
+				measurements[3] = fieldArr[2].getText().strip();
+				try {
+					Integer.parseInt(fieldArr[2].getText().strip());
+				} catch (NumberFormatException ed) {
+					nextScene = false;
+				}
+			}
+			if (!fieldArr[3].getText().equals("")) {
+				measurements[4] = fieldArr[3].getText().strip();
+				try {
+					Integer.parseInt(fieldArr[3].getText().strip());
+				} catch (NumberFormatException ed) {
+					nextScene = false;
+				}
+			}
+			if (!fieldArr[4].getText().equals("")) {
+				measurements[6] = fieldArr[4].getText().strip();
+				try {
+					Integer.parseInt(fieldArr[4].getText().strip());
+					measurements[6] = Integer
+							.toString((int) (Math.round(Double.parseDouble(measurements[6]) * 2) / 2.0));
+				} catch (NumberFormatException ed) {
+					nextScene = false;
+				}
+			}
+			if (nextScene) {
+				table.getCurrentCustomer().update(measurements);
+				primaryStage.setScene(profileScene(primaryStage));
+			} else {
+				error.setVisible(true);
+			}
+		});
+
+		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
+	}
 
 //Scene 3
 	private Scene loginScreen(Stage primaryStage) {
@@ -460,9 +747,10 @@ public class Main extends Application {
 	 */
 	private Scene sharedProfilesScene(Stage primaryStage) {
 		Text title = new Text("\tProfiles shared with you : \n");
+		title.setFont(new Font(30));
 		VBox vBox = new VBox();
 		Button b = new Button("Return");
-
+		b.setFont(new Font(20));
 		b.setOnAction(actionEvent -> {
 			primaryStage.setScene(profileScene(primaryStage));
 		});
@@ -470,11 +758,12 @@ public class Main extends Application {
 		// TODO implement with data structure later.
 		;
 		ArrayList<String> customers = table.getCurrentCustomer().getReceived();
-		
+
 		// Iterate through each customer
 		for (int i = 0; i < customers.size(); i++) {
 			String customerID = customers.get(i);
-			CheckBox customer = new CheckBox(table.getCustomer(customerID).getName());
+			CheckBox customer = new CheckBox(table.getCustomer(customerID).getAnalytics());
+			customer.setFont(new Font(20));
 			vBox.getChildren().add(customer);
 			// handle the event when the check box is being selected
 			EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
@@ -510,16 +799,19 @@ public class Main extends Application {
 		Customer curProfle = table.getCustomer(customerID);
 		Text title = new Text("\t" + curProfle.getName() + "'s profile : \n");
 		VBox vBox = new VBox();
+		title.setFont(new Font(30));
 
 		// display this customer's sizes
 		// TODO implement with data structure later
 		Text shirt = new Text("Shirts\n-sleeve : 32 in\n-fit : normal\n");
 		Text pants = new Text("Pants\n-waist : 32 in\n");
+		shirt.setFont(new Font(20));
+		pants.setFont(new Font(20));
 		vBox.getChildren().add(shirt);
 		vBox.getChildren().add(pants);
-
 		// Set stage basics
 		Button button = new Button("Return");
+		button.setFont(new Font(20));
 		button.setOnAction(actionEvent -> {
 			primaryStage.setScene(sharedProfilesScene(primaryStage));
 		});
@@ -532,15 +824,15 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		args = this.getParameters().getRaw();
-		//Adds some users
+		// Adds some users
 		Customer ben = new Customer("ben", "b1", "password");
 		Customer david = new Customer("david", "d1", "password");
 		Customer stan = new Customer("stan", "s1", "password");
 		Customer ethan = new Customer("ethan", "e1", "password");
-
 		ben.addReceived("d1");
 		ben.addReceived("s1");
 		ben.addReceived("e1");
+		ben.setShirt(new Shirt(1, 1, "CLASSIC"));
 		table.insert(ben);
 		table.insert(david);
 		table.insert(stan);

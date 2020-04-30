@@ -12,9 +12,78 @@ Lecture 001
 
 /**
  * Shirt = TODO Describe the purpose of this user-defined type
+ * 
  * @author Chiu (2020)
  *
  */
-public class Shirt implements Clothing{
+public class Shirt implements Clothing {
+	int sleeve;
+	int collar;
+	String fit;
+
+	public enum Fit {
+		CLASSIC("CLASSIC"), MODERN("MODERN"), SLIM("SLIM");
+
+		private final String text;
+
+		Fit(final String text) {
+			this.text = text;
+		}
+
+		public String toString() {
+			return text;
+		}
+
+	};
+
+
+	public Shirt() {
+		sleeve = 0;
+		collar = 0;
+		fit = null;
+	}
+
+	public Shirt(int sleeve, int collar, String fit) {
+		this.sleeve = sleeve;
+		this.collar = collar;
+		if (fit.toUpperCase().equals("CLASSIC")) {
+			this.fit = Fit.CLASSIC.toString();
+		} else if (fit.toUpperCase().equals("MODERN")) {
+			this.fit = Fit.MODERN.toString();
+		} else if (fit.toUpperCase().equals("SLIM")) {
+			this.fit = Fit.SLIM.toString();
+		}
+	}
+
+	public int getSleeve() {
+		return this.sleeve;
+	}
+
+	public void setSleeve(int sleeve) {
+		this.sleeve = sleeve;
+	}
+
+	public int getCollar() {
+		return collar;
+	}
+
+	public void setCollar(int collar) {
+		this.collar = collar;
+	}
+
+	public String getFit() {
+		return this.fit.toString();
+	}
+
+	public void setFit(String fit) {
+		if (fit.toUpperCase().equals(Fit.CLASSIC.toString())) {
+			this.fit = Fit.CLASSIC.toString();
+		} else if (fit.toUpperCase().equals(Fit.MODERN.toString())) {
+			this.fit = Fit.MODERN.toString();
+		} else if (fit.toUpperCase().equals(Fit.SLIM.toString())) {
+			this.fit = Fit.SLIM.toString();
+		}
+
+	}
 
 }

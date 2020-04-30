@@ -119,9 +119,21 @@ public class CustomerTable {
 		currentCustomer = customer;
 	}
 	
+	/**
+	 * Replace Method that can help update in certain cases 
+	 * @param oldCusID
+	 * @param updatedCustomer
+	 * @return
+	 */
 	public boolean replace(String oldCusID, Customer updatedCustomer) {
 		if(table.replace(oldCusID, updatedCustomer)==null)return false;
 		return true;
+	}
+	/**
+	 * Sets CurCustomer to Null
+	 */
+	public void clearCurrentCustomer() {
+		currentCustomer = null;
 	}
 
 }

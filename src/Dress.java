@@ -16,5 +16,18 @@ Lecture 001
  *
  */
 public class Dress implements Clothing{
+	int size;
 
+	public Dress() {
+		this.size = 0;
+	}
+	public Dress(int size) {
+		this.size = size;
+	}
+	public int getSize() {
+		return this.size;
+	}
+	public void setSize(int size) {
+		this.size = Math.round(size/2) * 2;
+	}
 }

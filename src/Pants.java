@@ -16,5 +16,18 @@ Lecture 001
  *
  */
 public class Pants implements Clothing{
+	int waist;
+	int inseem;
 
+	public Pants() {
+		waist = 0;
+		inseem = 0;
+	}
+
+	public Pants(int waist, int inseem) {
+		this.waist = waist;
+		this.inseem = inseem;
+	}
+
+	
 }

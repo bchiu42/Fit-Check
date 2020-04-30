@@ -16,5 +16,14 @@ Lecture 001
  *
  */
 public class Shoe implements Clothing{
+	 int size;
+
+	 public Shoe(int size) {
+		 this.size = size;
+	 }
+	 public Shoe() {
+		 this.size = 0;
+	 }
+
 
 }
