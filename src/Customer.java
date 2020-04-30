@@ -97,4 +97,21 @@ public class Customer {
 		}
 	}
 	
+	/**
+	 * get analytics of this customer
+	 * @return a string contains the analytics
+	 */
+	public String getAnalytics() {
+		String result = "";
+		result += "Name: " + this.name;
+		result += " ; ID: " + this.CustomerID;
+		int sharedNum = this.Shared.size();
+		if ( sharedNum == 1) {
+			result += " ; Shared with " + sharedNum + " other customer.";
+		}else {
+			result += " ; Shared with " + sharedNum + " other customers.";
+		}
+		return result;
+	}
+	
 }
