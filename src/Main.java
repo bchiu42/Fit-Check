@@ -277,12 +277,10 @@ public class Main extends Application {
 		StackPane bp = new StackPane();
 		Button cancel = new Button("Cancel");
 		Button yes = new Button("Yes");
-		Label deleteNext = new Label("Are you sure you want to delete your profile? "
-				+ "This cannot be undone.");
+		Label deleteNext = new Label("Are you sure you want to delete your profile? " + "This cannot be undone.");
 		deleteNext.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 		yes.setFont(Font.font("Arial", 20));
 		cancel.setFont(Font.font("Arial", 20));
-
 
 		yes.setOnAction((ActionEvent e) -> {
 			table.remove(table.getCurrentCustomer());
@@ -298,7 +296,6 @@ public class Main extends Application {
 		StackPane.setAlignment(deleteNext, Pos.TOP_CENTER);
 		StackPane.setAlignment(yes, Pos.CENTER_LEFT);
 		StackPane.setAlignment(cancel, Pos.CENTER_RIGHT);
-
 
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
@@ -837,26 +834,112 @@ public class Main extends Application {
 	 * @param customer     customer name
 	 */
 	private void sharedProfileScene(Stage primaryStage, String customerID) {
-		Customer curProfle = table.getCustomer(customerID);
-		Text title = new Text("\t" + curProfle.getName() + "'s profile : \n");
+		Customer curProfile = table.getCustomer(customerID);
+		Text title = new Text("\t" + curProfile.getName() + "'s profile : \n");
+		Text noData = new Text("This user does not have any data filled out!");
+		noData.setFont(new Font(30));
 		VBox vBox = new VBox();
 		title.setFont(new Font(30));
 
-		// display this customer's sizes
-		// TODO implement with data structure later
-		Text shirt = new Text("Shirts\n-sleeve : 32 in\n-fit : normal\n");
-		Text pants = new Text("Pants\n-waist : 32 in\n");
+		boolean shirtShow = false;
+		String shirtText = "Shirts\n";
+		try {
+			int sleeve = curProfile.getShirt().getSleeve();
+			if(sleeve == 0) throw new NullPointerException();
+
+			shirtText = shirtText + "-sleeve : " + sleeve + " in";
+			shirtShow = true;
+		} catch (NullPointerException e) {}
+		
+		try {
+			int collor = curProfile.getShirt().getCollar();
+			if(collor == 0) throw new NullPointerException();
+
+			shirtText = shirtText + "\n-collor : " + collor + " in";
+			shirtShow = true;
+
+		} catch (NullPointerException e) {}
+		
+		try {
+			String fit = curProfile.getShirt().getFit();
+			shirtText = shirtText + "\n-fit : " + fit + "\n";
+			shirtShow = true;
+
+		} catch (NullPointerException e) {}
+		if(!shirtShow) {
+			shirtText = "";
+		}
+		Text shirt = new Text(shirtText);
+		
+		boolean pantsShow = false;
+		String pantsText = "Pants\n";
+		
+		try{
+			int waist = curProfile.getPants().getWaist();
+			if(waist == 0) throw new NullPointerException();
+			pantsText = "-waist : " + waist + " in";
+			pantsShow = true;
+		}catch (NullPointerException e) {}
+		
+		try{
+			int inseem = curProfile.getPants().getInseem();
+			if(inseem == 0) throw new NullPointerException();
+
+			pantsShow = true;
+			 pantsText = "\n-inseem : " + inseem + " in\n";
+		}catch (NullPointerException e) {}
+		if(!pantsShow) {
+			pantsText = "";
+		}
+
+		Text pants = new Text(pantsText);
+		String dressText = "";
+		boolean dressShow = false;
+		try{
+			int dress_size = curProfile.getDress().getSize();
+			if(dress_size == 0) throw new NullPointerException();
+			dressShow = true;
+			 dressText = "Dress\n-size : " + dress_size + " in\n";
+		}catch (NullPointerException e) {}
+		Text dress = new Text(dressText);
+		boolean shoeShow = false;
+		String shoeText = "";
+		try{
+			int shoe_size = curProfile.getShoe().getSize();
+			if(shoe_size == 0) throw new NullPointerException();
+			shoeShow = true;
+			shoeText = "Shoe\n-size : " + shoe_size + " in\n";
+
+		}catch (NullPointerException e) {}
+		Text shoe = new Text(shoeText);
+		
+
+		
+
 		shirt.setFont(new Font(20));
 		pants.setFont(new Font(20));
+		dress.setFont(new Font(20));
+		shoe.setFont(new Font(20));
 		vBox.getChildren().add(shirt);
 		vBox.getChildren().add(pants);
+		vBox.getChildren().add(dress);
+		vBox.getChildren().add(shoe);
+
 		// Set stage basics
 		Button button = new Button("Return");
 		button.setFont(new Font(20));
 		button.setOnAction(actionEvent -> {
 			primaryStage.setScene(sharedProfilesScene(primaryStage));
 		});
-		BorderPane root = new BorderPane(vBox, title, null, button, null);
+		
+		BorderPane root = new BorderPane();
+		if(!shirtShow && !pantsShow && !dressShow && !shoeShow) {
+			root = new BorderPane(vBox, title, null, button, noData);
+		}
+		else{
+			root = new BorderPane(vBox, title, null, button, null);
+		}
+		root.getChildren().add(new Label("yeet"));
 		Scene scene8 = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 		primaryStage.setScene(scene8);
 		primaryStage.show();
