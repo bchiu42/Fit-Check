@@ -16,5 +16,19 @@ Lecture 001
  *
  */
 public class Shoe implements Clothing{
+	double size;
+
+        public Shoe() {
+                this.size = 0;
+        }
+        public Shoe(double size) {
+                this.size = size;
+        }
+        private int getSize() {
+                return this.size;
+        }
+        private void setSize(double size) {
+                this.size = Math.round(size * 2) / 2;
+        }
 
 }
