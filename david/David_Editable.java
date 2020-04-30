@@ -63,7 +63,7 @@
       primaryStage.setScene(profileScene(primaryStage));
     });
     
-    Label customer = new Label("Customer: David Breiten");
+    Label customer = new Label("Customer: " + Table.currentCustomer.getName());
     Label shirt = new Label("Shirt");
     Label pants = new Label("Pants");
     Label sleeve = new Label("Sleeve: ");
