@@ -255,7 +255,7 @@ public class Main extends Application {
 		HBox shareHelper = new HBox();
 		Region spacer3 = new Region();
 		spacer3.setPrefWidth(200);
-		shareHelper.getChildren().addAll(spacer3,share);
+		shareHelper.getChildren().addAll(spacer3, share);
 		center.getChildren().addAll(spacer2, shareHelper, sucess);
 		Region spacer1 = new Region();
 		spacer1.setPrefWidth(150);
@@ -263,6 +263,42 @@ public class Main extends Application {
 		bp.setTop(h);
 		bp.setCenter(center);
 		bp.setBottom(back);
+
+		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
+	}
+
+	/**
+	 * Delete Scene
+	 * 
+	 * @param primaryStage
+	 * @return
+	 */
+	private Scene deleteProfileScene(Stage primaryStage) {
+		StackPane bp = new StackPane();
+		Button cancel = new Button("Cancel");
+		Button yes = new Button("Yes");
+		Label deleteNext = new Label("Are you sure you want to delete your profile? "
+				+ "This cannot be undone.");
+		deleteNext.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+		yes.setFont(Font.font("Arial", 20));
+		cancel.setFont(Font.font("Arial", 20));
+
+
+		yes.setOnAction((ActionEvent e) -> {
+			table.remove(table.getCurrentCustomer());
+			table.clearCurrentCustomer();
+			primaryStage.setScene(baseScreen(primaryStage));
+		});
+
+		cancel.setOnAction((ActionEvent e) -> {
+			primaryStage.setScene(profileScene(primaryStage));
+		});
+
+		bp.getChildren().addAll(deleteNext, cancel, yes);
+		StackPane.setAlignment(deleteNext, Pos.TOP_CENTER);
+		StackPane.setAlignment(yes, Pos.CENTER_LEFT);
+		StackPane.setAlignment(cancel, Pos.CENTER_RIGHT);
+
 
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
@@ -292,6 +328,11 @@ public class Main extends Application {
 			table.clearCurrentCustomer();
 			primaryStage.setScene(baseScreen(primaryStage));
 		});
+		delete.setOnAction((ActionEvent e) -> {
+
+			primaryStage.setScene(deleteProfileScene(primaryStage));
+		});
+
 		measurements = table.getCurrentCustomer().getMeasurements();
 
 		Label customer = new Label("Customer: " + table.getCurrentCustomer().getName());
