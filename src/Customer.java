@@ -73,7 +73,86 @@ public class Customer {
 	 * @param jsonFilepath
 	 */
 	public void readFile(String jsonFilepath) {
+		JSONParser jsonParser = new JSONParser();
+       
+      		try (FileReader reader = new FileReader(jsonFilepath))
+      		{
+          	//Read JSON file
+          		Object obj = jsonParser.parse(reader);
 
+          		JSONObject jo = (JSONObject) obj;
+
+      		} catch (FileNotFoundException e) {
+          		e.printStackTrace();
+      		} catch (IOException e2) {
+          		e2.printStackTrace();
+      		} catch (ParseException e3) {
+          		e3.printStackTrace();
+     		}
+		JSONArray packages = (JSONArray) jo.get("packages");
+    		// Get the customer's name
+    		JSONObject customer = (JSONObject) packages.get(0);
+    		// Put the customer name in a String
+    		String customerName  = (String) customer.get("name");
+    		String pw = (String) customer.get("password");
+    		String ID = (String) customer.get("customerID");
+    		// Get the following customer's information
+    		JSONArray customerInformation = (JSONArray) customer.get("information");
+    		// Get the gender info from the customer
+    		JSONObject finalCusInfo = (JSONObject) customerInformation.get(0);
+    		// Put the gender info in a String
+
+    		// Get the clothes types as a JSON Array
+    		JSONArray clothesTypes = (JSONArray) finalCusInfo.get("clothes");
+
+    		JSONArray currArr = null;
+    		String[] shirt = new String[3];
+    		String[] pants = new String[2];
+    		String shoes = null;
+    		String dress = null;
+
+    		for (int j = 0; j < clothesTypes.size(); j++) {
+        		JSONObject currClothes = (JSONObject) clothesTypes.get(j);
+
+        		if (currClothes.get("shirt") != null) {
+          			currArr = (JSONArray) currClothes.get("shirt");
+          			for(int i = 0; i < 3; i++) {
+            				shirt[i] = String.valueOf(currArr.get(i));
+          			}
+        		}	
+        		else if (currClothes.get("pants") != null) {
+          			currArr = (JSONArray) currClothes.get("pants");
+          			for(int i = 0; i < 2; i++) {
+            				pants[i] = String.valueOf(currArr.get(i));
+          			}
+        		}	
+        		else if (currClothes.get("shoe") != null) {
+          			shoes = String.valueOf(currClothes.get("shoe"));
+        		}
+        		else if (currClothes.get("dress") != null) {
+          			dress = String.valueOf(currClothes.get("dress"));
+        		}
+    		}
+
+    		JSONArray sharedPeople = (JSONArray) finalCusInfo.get("shared");
+    		JSONArray givenPeople = (JSONArray) finalCusInfo.get("given");
+
+    		for(int m = 0; m < sharedPeople.size(); m++) {
+      			Table.currentCustomer.addShared(sharedPeople.get(m));
+    		}
+    		for(int n = 0; n < sharedPeople.size(); n++) {
+      			Table.currentCustomer.addRecieved(givenPeople.get(n));
+    		}
+
+    		String[] clothes = new String[7];
+    		System.arraycopy(shirt, 0, clothes, 0, shirt.length);
+    		System.arraycopy(pants, 0, clothes, 3, pants.length);
+    		clothes[5] = dress;
+    		clothes[6] = shoes;
+
+    		Table.currentCustomer.update(clothes);
+    		Table.currentCustomer.setID(ID);
+    		Table.currentCustomer.setPassword(pw);
 	}
 	
 	public void setCustomerID(String ID) {
