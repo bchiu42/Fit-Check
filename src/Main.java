@@ -128,6 +128,7 @@ public class Main extends Application {
 		spacer3.setPrefHeight(30);
 		Label JSONinfo = new Label("If you have a JSON file containing size information, click yes. "
 				+ " Otherwise you must manually enter size information.");
+		JSONinfo.setFont(Font.font(12));
 		final ToggleGroup group = new ToggleGroup();
 
 		RadioButton yes = new RadioButton("yes");
@@ -312,6 +313,16 @@ public class Main extends Application {
 		Button share = new Button("Share");
 		Button edit = new Button("Edit");
 		Button delete = new Button("Delete");
+		Button export = new Button("Export to JSON");
+		Label jsonExport = new Label(
+				table.getCurrentCustomer().getCustomerID() + ".JSON sucessfully \n" + "exported to project folder!");
+		jsonExport.setVisible(false);
+
+		export.setOnAction((ActionEvent e) -> {
+			table.getCurrentCustomer().generateJSON();
+			jsonExport.setVisible(true);
+
+		});
 
 		share.setOnAction((ActionEvent e) -> {
 			primaryStage.setScene(shareScene(primaryStage));
@@ -431,9 +442,10 @@ public class Main extends Application {
 		dress.setFont(Font.font("Arial", FontWeight.BOLD, 10));
 		shoe.setFont(Font.font("Arial", FontWeight.BOLD, 10));
 		empty.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+		jsonExport.setFont(Font.font("Arial", 10));
 
 		logOut.getTransforms().add(scale);
-
+		export.getTransforms().add(new Scale(1.5, 1.5, 100, 0));
 		delete.getTransforms().add(scale3);
 		edit.getTransforms().add(scale4);
 
@@ -455,9 +467,11 @@ public class Main extends Application {
 		waist.getTransforms().add(new Scale(1.3, 1.3, -20, -60));
 		inseem.getTransforms().add(new Scale(1.3, 1.3, -20, -120));
 
+		jsonExport.getTransforms().add(new Scale(1.5, 1.5, 150, -100));
+
 		StackPane bp = new StackPane();
 		bp.getChildren().addAll(logOut, share, yourProfiles, edit, delete, customer, shirt, pants, sleeve, collar, fit,
-				waist, inseem, dress, dsize, ssize, shoe, empty);
+				waist, inseem, dress, dsize, ssize, shoe, empty, export, jsonExport);
 		StackPane.setAlignment(share, Pos.BOTTOM_LEFT);
 		StackPane.setAlignment(logOut, Pos.BOTTOM_LEFT);
 		StackPane.setAlignment(edit, Pos.BOTTOM_RIGHT);
@@ -475,7 +489,8 @@ public class Main extends Application {
 		StackPane.setAlignment(dsize, Pos.CENTER_RIGHT);
 		StackPane.setAlignment(shoe, Pos.CENTER_RIGHT);
 		StackPane.setAlignment(ssize, Pos.CENTER_RIGHT);
-
+		StackPane.setAlignment(export, Pos.TOP_RIGHT);
+		StackPane.setAlignment(jsonExport, Pos.TOP_RIGHT);
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 
@@ -513,7 +528,7 @@ public class Main extends Application {
 			primaryStage.setScene(profileScene(primaryStage));
 		});
 
-		Label customer = new Label("Customer: David Breiten");
+		Label customer = new Label("Customer: " + table.getCurrentCustomer().getName());
 		Label shirt = new Label("Shirt");
 		Label pants = new Label("Pants");
 		Label sleeve = new Label("Sleeve: ");
@@ -654,12 +669,12 @@ public class Main extends Application {
 			}
 			if (nextScene) {
 				table.getCurrentCustomer().update(measurements);
+				table.getCurrentCustomer().generateJSON();
 				primaryStage.setScene(profileScene(primaryStage));
 			} else {
 				error.setVisible(true);
 			}
 		});
-
 		return new Scene(bp, WINDOW_WIDTH, WINDOW_HEIGHT);
 	}
 
@@ -845,76 +860,86 @@ public class Main extends Application {
 		String shirtText = "Shirts\n";
 		try {
 			int sleeve = curProfile.getShirt().getSleeve();
-			if(sleeve == 0) throw new NullPointerException();
+			if (sleeve == 0)
+				throw new NullPointerException();
 
 			shirtText = shirtText + "-sleeve : " + sleeve + " in";
 			shirtShow = true;
-		} catch (NullPointerException e) {}
-		
+		} catch (NullPointerException e) {
+		}
+
 		try {
 			int collor = curProfile.getShirt().getCollar();
-			if(collor == 0) throw new NullPointerException();
+			if (collor == 0)
+				throw new NullPointerException();
 
 			shirtText = shirtText + "\n-collor : " + collor + " in";
 			shirtShow = true;
 
-		} catch (NullPointerException e) {}
-		
+		} catch (NullPointerException e) {
+		}
+
 		try {
 			String fit = curProfile.getShirt().getFit();
 			shirtText = shirtText + "\n-fit : " + fit + "\n";
 			shirtShow = true;
 
-		} catch (NullPointerException e) {}
-		if(!shirtShow) {
+		} catch (NullPointerException e) {
+		}
+		if (!shirtShow) {
 			shirtText = "";
 		}
 		Text shirt = new Text(shirtText);
-		
+
 		boolean pantsShow = false;
 		String pantsText = "Pants\n";
-		
-		try{
+
+		try {
 			int waist = curProfile.getPants().getWaist();
-			if(waist == 0) throw new NullPointerException();
+			if (waist == 0)
+				throw new NullPointerException();
 			pantsText = "-waist : " + waist + " in";
 			pantsShow = true;
-		}catch (NullPointerException e) {}
-		
-		try{
+		} catch (NullPointerException e) {
+		}
+
+		try {
 			int inseem = curProfile.getPants().getInseem();
-			if(inseem == 0) throw new NullPointerException();
+			if (inseem == 0)
+				throw new NullPointerException();
 
 			pantsShow = true;
-			 pantsText = "\n-inseem : " + inseem + " in\n";
-		}catch (NullPointerException e) {}
-		if(!pantsShow) {
+			pantsText = "\n-inseem : " + inseem + " in\n";
+		} catch (NullPointerException e) {
+		}
+		if (!pantsShow) {
 			pantsText = "";
 		}
 
 		Text pants = new Text(pantsText);
 		String dressText = "";
 		boolean dressShow = false;
-		try{
+		try {
 			int dress_size = curProfile.getDress().getSize();
-			if(dress_size == 0) throw new NullPointerException();
+			if (dress_size == 0)
+				throw new NullPointerException();
 			dressShow = true;
-			 dressText = "Dress\n-size : " + dress_size + " in\n";
-		}catch (NullPointerException e) {}
+			dressText = "Dress\n-size : " + dress_size + " in\n";
+		} catch (NullPointerException e) {
+		}
 		Text dress = new Text(dressText);
 		boolean shoeShow = false;
 		String shoeText = "";
-		try{
+		try {
 			int shoe_size = curProfile.getShoe().getSize();
-			if(shoe_size == 0) throw new NullPointerException();
+			if (shoe_size == 0)
+				throw new NullPointerException();
 			shoeShow = true;
 			shoeText = "Shoe\n-size : " + shoe_size + " in\n";
 
-		}catch (NullPointerException e) {}
+		} catch (NullPointerException e) {
+		}
 		Text shoe = new Text(shoeText);
-		
-
-		
 
 		shirt.setFont(new Font(20));
 		pants.setFont(new Font(20));
@@ -931,12 +956,11 @@ public class Main extends Application {
 		button.setOnAction(actionEvent -> {
 			primaryStage.setScene(sharedProfilesScene(primaryStage));
 		});
-		
+
 		BorderPane root = new BorderPane();
-		if(!shirtShow && !pantsShow && !dressShow && !shoeShow) {
+		if (!shirtShow && !pantsShow && !dressShow && !shoeShow) {
 			root = new BorderPane(vBox, title, null, button, noData);
-		}
-		else{
+		} else {
 			root = new BorderPane(vBox, title, null, button, null);
 		}
 		root.getChildren().add(new Label("yeet"));
