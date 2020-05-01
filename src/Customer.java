@@ -66,7 +66,6 @@ public class Customer {
 	 * 
 	 * @param jsonFilepath
 	 */
-<<<<<<< HEAD
 	public void readFile(String jsonFilepath) {
 		JSONParser jsonParser = new JSONParser();
        
@@ -148,36 +147,6 @@ public class Customer {
     		Table.currentCustomer.update(clothes);
     		Table.currentCustomer.setID(ID);
     		Table.currentCustomer.setPassword(pw);
-=======
-	public void readFile(JSONObject jo) {
-		// Get the package
-		JSONArray packages = (JSONArray) jo.get("packages");
-		// Get the customer's name
-		JSONObject customer = (JSONObject) packages.get(0);
-		// Put the customer name in a String
-		String customerName = (String) customer.get("name");
-		// Get the following customer's information
-		JSONArray customerInformation = (JSONArray) packages.get(1);
-		// Get the gender info from the customer
-		JSONObject gender = (JSONObject) customerInformation.get(0);
-		// Put the gender info in a String
-		String customerGender = (String) gender.get("gender");
-		// Get the clothes types as a JSON Array
-		JSONArray clothesTypes = (JSONArray) customerInformation.get(1);
-		// Deep in clothes types (Not sure about this actually. Do we just need to
-		// Print out the info or store those values. Since I am not sure if we need
-		// to add more based on the example JSON file, I will just print it by using
-		// iterator.
-		for (int i = 0; i < clothesTypes.size(); i++) {
-			JSONArray clothes = (JSONArray) packages.get(i);
-			Iterator iterator = clothes.iterator();
-			while (iterator.hasNext()) {
-				System.out.println(iterator.next());
-			}
-		}
-		JSONArray sharedPeople = (JSONArray) customerInformation.get(2);
-		JSONArray givenPeople = (JSONArray) customerInformation.get(3);
->>>>>>> 91051161894bf06e3950edf86452c84d04d4451f
 	}
 
 	public JSONObject generateJSON() {
