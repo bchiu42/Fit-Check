@@ -361,39 +361,78 @@ public class Customer {
 	public Shirt getShirt() {
 		return shirt;
 	}
-
+	
+	/**
+	 * Sets this customers shirt to the specified shirt
+	 *
+	 * shirt - the shirt being set
+	 */
 	public void setShirt(Shirt shirt) {
 		this.shirt = shirt;
 	}
 
+	/**
+	 * Gets this custoemrs shirt
+	 */
 	public Pants getPants() {
 		return pants;
 	}
 
+	/**
+	 * Sets this customers pants
+	 *
+	 * pants - the pants
+	 */
 	public void setPants(Pants pants) {
 		this.pants = pants;
 	}
-
+	
+	/**
+	 * Gets this customer dress
+	 */
 	public Dress getDress() {
 		return dress;
 	}
 
+	/**
+	 * Sets this customers dress to the specified dress
+	 *
+	 * dress - the dress being set
+	 */
 	public void setDress(Dress dress) {
 		this.dress = dress;
 	}
 
+	/**
+	 * Gets this customers shoe
+	 */
 	public Shoe getShoe() {
 		return shoe;
 	}
 
+	/**
+	 * Sets this cutomers shoe to the specified shoe
+	 *
+	 * shoe - the shoe to be set
+	 */
 	public void setShoe(Shoe shoe) {
 		this.shoe = shoe;
 	}
 
+	/**
+	 * Sets this custoemrs ID to the given ID
+	 *
+	 * customerID - the ID being set
+	 */
 	public void setCustomerID(String customerID) {
 		CustomerID = customerID;
 	}
 
+	/**
+	 * Sets this customers password to the given password
+	 *
+	 * password - the new password
+	 */
 	public void setPassword(String password) {
 		Password = password;
 	}
