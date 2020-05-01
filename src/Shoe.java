@@ -11,7 +11,7 @@ Lecture 001
  */
 
 /**
- * Shoes = TODO Describe the purpose of this user-defined type
+ * Shoes contains the shoe size
  * @author Chiu (2020)
  *
  */
