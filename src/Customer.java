@@ -75,9 +75,17 @@ public class Customer {
 	public void readFile(String jsonFilepath) {
 
 	}
+	
+	public void setCustomerID(String ID) {
+		this.CustomerID = ID;
+	}
 
 	public String getCustomerID() {
 		return CustomerID;
+	}
+
+	public void setPassword(String pw) {
+		this.Password = pw;
 	}
 
 	public String getPassword() {
