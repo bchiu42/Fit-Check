@@ -11,7 +11,7 @@ Lecture 001
  */
 
 /**
- * Dress = TODO Describe the purpose of this user-defined type
+ * Dress just holds the dress size, in sizes of even numbers
  * @author Chiu (2020)
  *
  */

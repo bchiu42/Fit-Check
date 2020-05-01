@@ -11,7 +11,7 @@ Lecture 001
  */
 
 /**
- * Pants = TODO Describe the purpose of this user-defined type
+ * Pants holds the inseem and waist in inches
  * @author Chiu (2020)
  *
  */
