@@ -20,7 +20,8 @@ Lecture 001
  */
 
 /**
- * Customer = TODO Describe the purpose of this user-defined type
+ * Customer class describes a single Customer who has such elements as a name, ID, password,
+ * lists of shared and given customer, as well as 4 different clothes
  * 
  * @author Chiu (2020)
  *
@@ -36,6 +37,7 @@ public class Customer {
 	private Dress dress;
 	private Shoe shoe;
 
+	//Two constructors for different situations when customers are created
 	public Customer(String name, String customerID, String password, ArrayList<String> shared,
 			ArrayList<String> recieved) {
 		this.name = name;
@@ -105,7 +107,8 @@ public class Customer {
     		String shoes = null;
     		String dress = null;
 
-    		for (int j = 0; j < clothesTypes.size(); j++) {
+
+    		for (int j = 0; j < clothesTypes.size(); j++) {		//for loop that gets all the clothing data 
         		JSONObject currClothes = (JSONObject) clothesTypes.get(j);
 
         		if (currClothes.get("shirt") != null) {
@@ -128,10 +131,10 @@ public class Customer {
         		}
     		}
 
-    		JSONArray sharedPeople = (JSONArray) finalCusInfo.get("shared");
+    		JSONArray sharedPeople = (JSONArray) finalCusInfo.get("shared");	//Gets the arrays of shared and given people
     		JSONArray givenPeople = (JSONArray) finalCusInfo.get("given");
 
-    		for(int m = 0; m < sharedPeople.size(); m++) {
+    		for(int m = 0; m < sharedPeople.size(); m++) {			//Adds to this customers list of shared and given people
       			Table.currentCustomer.addShared(sharedPeople.get(m));
     		}
     		for(int n = 0; n < sharedPeople.size(); n++) {
@@ -144,13 +147,17 @@ public class Customer {
     		clothes[5] = dress;
     		clothes[6] = shoes;
 
-    		Table.currentCustomer.update(clothes);
+    		Table.currentCustomer.update(clothes);	//Updates this customers clothes, ID and passwords
     		Table.currentCustomer.setID(ID);
     		Table.currentCustomer.setPassword(pw);
 	}
-
+	
+	/**
+	 * Generates a JSON file based on the users current data	 
+	 *
+	 */
 	public JSONObject generateJSON() {
-		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject = new JSONObject();	//Create all necessary JSONObjects and Arrays
 		JSONArray customer = new JSONArray();
 		JSONObject name = new JSONObject();
 		JSONObject customerID = new JSONObject();
@@ -169,7 +176,7 @@ public class Customer {
 		JSONObject givenObj = new JSONObject();
 		JSONArray shared = new JSONArray();
 		JSONArray given = new JSONArray();
-		shirt.add(this.shirt.sleeve);
+		shirt.add(this.shirt.sleeve);		//Adds data to above objects
 		shirt.add(this.shirt.collar);
 		try {
 			shirt.add(this.shirt.fit);
@@ -188,13 +195,10 @@ public class Customer {
 		clothesArray.add(shoe);
 		clothes.put("clothes", clothesArray);
 		informationArray.add(clothes);
-		name.put("name", this.name);
+		name.put("name", this.name);		//Sets the names for each piece of info
 		name.put("information", informationArray);
 		name.put("customerID", this.CustomerID);
 		name.put("password", this.Password);
-//		customer.add(customerID);
-//		customer.add(password);
-//		customer.add(information);
 		for (int k = 0; k < this.Shared.size(); k++) {
 			shared.add(Shared.get(k));
 		}
@@ -203,8 +207,6 @@ public class Customer {
 		}
 		name.put("given", given);
 		name.put("shared", shared);
-//		customer.add(sharedObj);
-//		customer.add(givenObj);
 		customer.add(name);
 
 		jsonObject.put("packages", customer);
@@ -218,41 +220,74 @@ public class Customer {
 		return jsonObject;
 	}
 
+	/**
+	 * Gets this customers ID
+	 */
 	public String getCustomerID() {
 		return CustomerID;
 	}
-
+	
+	/**
+	 * Gets this customers Password
+	 */
 	public String getPassword() {
 		return Password;
 	}
 
+	/**
+	 * Gets the list of shared people
+	 */
 	public ArrayList<String> getShared() {
 		return Shared;
 	}
 
+	/**
+	 * Gets the list of revieved people
+	 */
 	public ArrayList<String> getReceived() {
 		return Received;
 	}
-
+	
+	/**
+	 * Adds a specified customer to the recieved list
+	 *
+	 * customerID2 - The customer being added to this customers list
+	 */
 	public Customer addReceived(String customerID2) {
 		Received.add(customerID2);
 		return this;
 	}
-
+	
+	/**
+         * Adds a specified customer to the shared list
+         *
+         * recieveID - The customer being added to this customers list
+         */
 	public Customer addShared(String receiveID) {
 		Shared.add(receiveID);
 		return this;
 	}
 
+	/**
+	 *Parses a json file to get information about a new customer
+	 * 
+	 * jo - the JSONObject to be parsed
+	 */
 	public void parseJSON(JSONObject jo) {
 		// TODO Auto-generated method stub
 
 	}
-
+	
+	/**
+	 * Gets this customers name
+	 */
 	public String getName() {
 		return name;
 	}
-
+	
+	/**
+	 * Prints the list of this customers recieved customers
+	 */
 	public void printReceived() {
 		for (String e : Received) {
 			System.out.println(e);
@@ -266,7 +301,7 @@ public class Customer {
 	 */
 	public String getAnalytics() {
 		String result = "";
-		result += "Name: " + this.name;
+		result += "Name: " + this.name;		//Gets data from the recieved list
 		result += " ; ID: " + this.CustomerID;
 		int sharedNum = this.Shared.size();
 		if (sharedNum == 0 || sharedNum == 1) {
@@ -324,6 +359,9 @@ public class Customer {
 		return ret;
 	}
 
+	/**
+	 * Gets this customers shirt
+	 */
 	public Shirt getShirt() {
 		return shirt;
 	}
