@@ -24,6 +24,9 @@ public class Shoe implements Clothing{
 	 public Shoe() {
 		 this.size = 0;
 	 }
+	public int getSize() {
+		return size;
+	}
 
 
 }

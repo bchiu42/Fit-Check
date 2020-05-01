@@ -29,5 +29,13 @@ public class Pants implements Clothing{
 		this.inseem = inseem;
 	}
 
+	public int getInseem() {
+		return inseem;
+	}
+
+	public int getWaist() {
+		return waist;
+	}
+
 	
 }

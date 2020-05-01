@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,6 +8,8 @@ import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
 Customer.java created by ben on XPS 15 in Fit Check    
@@ -62,100 +66,77 @@ public class Customer {
 		dress = new Dress();
 		shoe = new Shoe();
 	}
+	
+	public void parseJSON(JSONObject jo) {
+		  JSONArray packages = (JSONArray) jo.get("packages");
+		  // Get the customer's name
+		  JSONObject customer = (JSONObject) packages.get(0);
+		  // Put the customer name in a String
+		  String customerName  = (String) customer.get("name");
+		  String pw = (String) customer.get("password");
+		  String ID = (String) customer.get("customerID");
+		  JSONArray sharedPeople = (JSONArray) customer.get("shared");
+		  JSONArray givenPeople = (JSONArray) customer.get("given");
+		  // Get the following customer's information
+		  JSONArray customerInformation = (JSONArray) customer.get("information");
+		  // Get the gender info from the customer
+		  JSONObject finalCusInfo = (JSONObject) customerInformation.get(0);
+		  // Put the gender info in a String
 
-	/**
-	 * Updates clothing info based on JSON file
-	 * 
-	 * @param jsonFilepath
-	 */
-	public void readFile(String jsonFilepath) {
-		JSONParser jsonParser = new JSONParser();
-       
-      		try (FileReader reader = new FileReader(jsonFilepath))
-      		{
-          	//Read JSON file
-          		Object obj = jsonParser.parse(reader);
+		  // Get the clothes types as a JSON Array
+		  JSONArray clothesTypes = (JSONArray) finalCusInfo.get("clothes");
 
-          		JSONObject jo = (JSONObject) obj;
+		  JSONArray currArr = null;
+		  String[] shirt = new String[3];
+		  String[] pants = new String[2];
+		  String shoes = null;
+		  String dress = null;
+		    
+		  for (int j = 0; j < clothesTypes.size(); j++) {
+		      JSONObject currClothes = (JSONObject) clothesTypes.get(j);
+		        
+		      if (currClothes.get("shirt") != null) {
+		        currArr = (JSONArray) currClothes.get("shirt");
+		        for(int i = 0; i < 3; i++) {
+		          shirt[i] = String.valueOf(currArr.get(i));
+		        }
+		      }
+		      else if (currClothes.get("pants") != null) {
+		        currArr = (JSONArray) currClothes.get("pants");
+		        for(int i = 0; i < 2; i++) {
+		          pants[i] = String.valueOf(currArr.get(i));
+		        }
+		      }
+		      else if (currClothes.get("shoe") != null) {
+		        shoes = String.valueOf(currClothes.get("shoe"));
+		      }
+		      else if (currClothes.get("dress") != null) {
+		        dress = String.valueOf(currClothes.get("dress"));
+		      }
+		  }
 
-      		} catch (FileNotFoundException e) {
-          		e.printStackTrace();
-      		} catch (IOException e2) {
-          		e2.printStackTrace();
-      		} catch (ParseException e3) {
-          		e3.printStackTrace();
-     		}
-		JSONArray packages = (JSONArray) jo.get("packages");
-    		// Get the customer's name
-    		JSONObject customer = (JSONObject) packages.get(0);
-    		// Put the customer name in a String
-    		String customerName  = (String) customer.get("name");
-    		String pw = (String) customer.get("password");
-    		String ID = (String) customer.get("customerID");
-    		// Get the following customer's information
-    		JSONArray customerInformation = (JSONArray) customer.get("information");
-    		// Get the gender info from the customer
-    		JSONObject finalCusInfo = (JSONObject) customerInformation.get(0);
-    		// Put the gender info in a String
-
-    		// Get the clothes types as a JSON Array
-    		JSONArray clothesTypes = (JSONArray) finalCusInfo.get("clothes");
-
-    		JSONArray currArr = null;
-    		String[] shirt = new String[3];
-    		String[] pants = new String[2];
-    		String shoes = null;
-    		String dress = null;
-
-
-    		for (int j = 0; j < clothesTypes.size(); j++) {		//for loop that gets all the clothing data 
-        		JSONObject currClothes = (JSONObject) clothesTypes.get(j);
-
-        		if (currClothes.get("shirt") != null) {
-          			currArr = (JSONArray) currClothes.get("shirt");
-          			for(int i = 0; i < 3; i++) {
-            				shirt[i] = String.valueOf(currArr.get(i));
-          			}
-        		}	
-        		else if (currClothes.get("pants") != null) {
-          			currArr = (JSONArray) currClothes.get("pants");
-          			for(int i = 0; i < 2; i++) {
-            				pants[i] = String.valueOf(currArr.get(i));
-          			}
-        		}	
-        		else if (currClothes.get("shoe") != null) {
-          			shoes = String.valueOf(currClothes.get("shoe"));
-        		}
-        		else if (currClothes.get("dress") != null) {
-          			dress = String.valueOf(currClothes.get("dress"));
-        		}
-    		}
-
-    		JSONArray sharedPeople = (JSONArray) finalCusInfo.get("shared");	//Gets the arrays of shared and given people
-    		JSONArray givenPeople = (JSONArray) finalCusInfo.get("given");
-
-    		for(int m = 0; m < sharedPeople.size(); m++) {			//Adds to this customers list of shared and given people
-      			Table.currentCustomer.addShared(sharedPeople.get(m));
-    		}
-    		for(int n = 0; n < sharedPeople.size(); n++) {
-      			Table.currentCustomer.addRecieved(givenPeople.get(n));
-    		}
-
-    		String[] clothes = new String[7];
-    		System.arraycopy(shirt, 0, clothes, 0, shirt.length);
-    		System.arraycopy(pants, 0, clothes, 3, pants.length);
-    		clothes[5] = dress;
-    		clothes[6] = shoes;
-
-    		Table.currentCustomer.update(clothes);	//Updates this customers clothes, ID and passwords
-    		Table.currentCustomer.setID(ID);
-    		Table.currentCustomer.setPassword(pw);
+//		  JSONArray sharedPeople = (JSONArray) finalCusInfo.get("shared");
+//		  JSONArray givenPeople = (JSONArray) finalCusInfo.get("given");
+		    
+		  for(int m = 0; m < sharedPeople.size(); m++) {
+		    addShared((String)sharedPeople.get(m));
+		  }
+		  for(int n = 0; n < givenPeople.size(); n++) {
+		    addReceived((String)givenPeople.get(n));
+		  }
+		    
+		  String[] clothes = new String[7];
+		  System.arraycopy(shirt, 0, clothes, 0, shirt.length);
+		  System.arraycopy(pants, 0, clothes, 3, pants.length);
+		  clothes[5] = dress;
+		  clothes[6] = shoes;
+		    
+		  update(clothes);
+		  this.CustomerID = ID;
+		  this.Password = pw;
+		 this.name = customerName;
 	}
 	
-	/**
-	 * Generates a JSON file based on the users current data	 
-	 *
-	 */
 	public JSONObject generateJSON() {
 		JSONObject jsonObject = new JSONObject();	//Create all necessary JSONObjects and Arrays
 		JSONArray customer = new JSONArray();
@@ -195,18 +176,33 @@ public class Customer {
 		clothesArray.add(shoe);
 		clothes.put("clothes", clothesArray);
 		informationArray.add(clothes);
+
 		name.put("name", this.name);		//Sets the names for each piece of info
 		name.put("information", informationArray);
 		name.put("customerID", this.CustomerID);
 		name.put("password", this.Password);
+
+//		customer.add(customerID);
+//		customer.add(password);
+//		customer.add(information);
+
 		for (int k = 0; k < this.Shared.size(); k++) {
 			shared.add(Shared.get(k));
 		}
 		for (int k = 0; k < this.Received.size(); k++) {
 			given.add(Received.get(k));
 		}
-		name.put("given", given);
+		name.put("name", this.name);
 		name.put("shared", shared);
+
+		name.put("customerID", this.CustomerID);
+		name.put("password", this.Password);
+		name.put("information", informationArray);
+		name.put("given", given);
+
+//		customer.add(sharedObj);
+//		customer.add(givenObj);
+
 		customer.add(name);
 
 		jsonObject.put("packages", customer);
@@ -412,7 +408,6 @@ public class Customer {
 		shirt.collar = Integer.parseInt(measurements[1]);
 		shirt.fit = measurements[2];
 		int temp = Integer.parseInt(measurements[3]);
-		System.out.println(temp);
 		pants.waist = temp;
 		pants.inseem = Integer.parseInt(measurements[4]);
 		dress.size = Integer.parseInt(measurements[5]);
