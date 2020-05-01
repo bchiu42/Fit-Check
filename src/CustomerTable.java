@@ -15,7 +15,7 @@ Lecture 001
  */
 
 /**
- * CustomerTable = TODO Describe the purpose of this user-defined type
+ * CustomerTable creates a hashtable of all the customers created so far
  * @author Chiu (2020)
  *
  */
