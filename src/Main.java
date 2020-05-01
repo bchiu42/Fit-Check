@@ -126,18 +126,14 @@ public class Main extends Application {
 		errorLabel.setTextFill(Color.RED);
 		Region spacer3 = new Region();
 		spacer3.setPrefHeight(30);
-		Label JSONinfo = new Label("If you have a JSON file containing size information, click yes. "
-				+ " Otherwise you must manually enter size information.");
+		Label JSONinfo = new Label("If you have a JSON file containing size information, click here to load it.");
 		JSONinfo.setFont(Font.font(12));
-		final ToggleGroup group = new ToggleGroup();
 
-		RadioButton yes = new RadioButton("yes");
-		RadioButton no = new RadioButton("no");
-		yes.setToggleGroup(group);
-		no.setToggleGroup(group);
+		Button yes = new Button("Here");
+
 		VBox fields = new VBox();
 		fields.getChildren().addAll(name, nameField, userID, userIDField, pass, passField1, pass2, passField2, JSONinfo,
-				yes, no, spacer2, errorLabel);
+				yes, spacer2, errorLabel);
 
 		h.getChildren().addAll(title, spacer1);
 		h.setSpacing(25);
@@ -157,6 +153,14 @@ public class Main extends Application {
 		bp.setCenter(fields);
 		bp.setBottom(h2);
 
+		yes.setOnAction((ActionEvent e) -> {
+			Customer newCustomer = new Customer(nameField.getText(), userIDField.getText(), passField1.getText());
+			errorLabel.setText("");
+			prevScene = primaryStage.getScene();
+//			prevScene = new Scene(backup, WINDOW_WIDTH, WINDOW_HEIGHT);
+			primaryStage.setScene(fileScene(primaryStage, newCustomer));		
+			});
+		
 		save.setOnAction((ActionEvent e) -> {
 
 			// Checks if entries are valid
@@ -174,11 +178,7 @@ public class Main extends Application {
 					return;
 				}
 			}
-			// checks if JSON button has been clicked
-			if (group.getSelectedToggle() == null) {
-				errorLabel.setText("Please answer the file passing question!");
-				return;
-			}
+
 			if (!passField1.getText().equals(passField2.getText())) {
 				errorLabel.setText(
 						"Your second entry of your password did not match your first, please have them match!");
@@ -192,15 +192,15 @@ public class Main extends Application {
 			else {
 				Customer newCustomer = new Customer(nameField.getText(), userIDField.getText(), passField1.getText());
 				// case if the user has a JSONfile
-				if (group.getSelectedToggle().toString().contains("yes")) {
-					errorLabel.setText("");
-					yes.setSelected(false);
-					prevScene = primaryStage.getScene();
-//					prevScene = new Scene(backup, WINDOW_WIDTH, WINDOW_HEIGHT);
-					primaryStage.setScene(fileScene(primaryStage, newCustomer));
-				}
+//				if (group.getSelectedToggle().toString().contains("yes")) {
+//					errorLabel.setText("");
+//					yes.setSelected(false);
+//					prevScene = primaryStage.getScene();
+////					prevScene = new Scene(backup, WINDOW_WIDTH, WINDOW_HEIGHT);
+//					primaryStage.setScene(fileScene(primaryStage, newCustomer));
+//				}
 				// case if the user does not have a JSONfile
-				else {
+				 {
 					table.insert(newCustomer);
 					try {
 						table.setCurrentCustomer(table.getCustomer(userIDField.getText()));
@@ -380,10 +380,15 @@ public class Main extends Application {
 		} else {
 			collar.setVisible(false);
 		}
-		if (!measurements[2].equals("-1")) {
+		if (!measurements[2].strip().equals("-1") && measurements[2] != null && !measurements[2].equals("null")) {
 			fit.setText("Fit: " + measurements[2]);
 			fit.setVisible(true);
 			displayShirt = true;
+			try {
+				Integer.parseInt(measurements[2].strip());
+				fit.setVisible(false);
+				displayShirt = false;
+			}catch(NumberFormatException e) {}
 		} else {
 			fit.setVisible(false);
 		}
@@ -433,7 +438,6 @@ public class Main extends Application {
 			shoe.setVisible(false);
 		}
 		if (!displayShirt && !displayPants && !displayDress && !displayShoes) {
-			System.out.println("yeet");
 			empty.setVisible(true);
 		}
 
@@ -761,15 +765,24 @@ public class Main extends Application {
 		Label loginFailed = new Label();
 		loginFailed.setTextFill(Color.RED);
 
+		
+		
 		loginButton.setOnAction((ActionEvent e) -> {
-			String path = JSONEnter + ".JSON";
+			String path = JSONEnter.getText() + ".JSON";
 			try {
 				Object obj = new JSONParser().parse(new FileReader(path));
 				JSONObject jo = (JSONObject) obj;
 				customer.parseJSON(jo);
+				if(table.contains(customer.getCustomerID())) {
+					table.remove(table.getCustomer(customer.getCustomerID()));
+				}
+				table.insert(customer);
 				table.setCurrentCustomer(customer);
 				primaryStage.setScene(profileScene(primaryStage));
 
+				
+				
+				
 			} catch (FileNotFoundException e1) {
 				loginFailed.setText("The file was not found.");
 			} catch (IOException e1) {
@@ -881,6 +894,10 @@ public class Main extends Application {
 
 		try {
 			String fit = curProfile.getShirt().getFit();
+			try {
+				Integer.parseInt(fit.strip());
+				throw new NullPointerException();
+			}catch(NumberFormatException e) {}
 			shirtText = shirtText + "\n-fit : " + fit + "\n";
 			shirtShow = true;
 

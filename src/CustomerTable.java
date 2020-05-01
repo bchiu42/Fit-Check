@@ -32,8 +32,6 @@ public class CustomerTable {
 		size = 0;
 	}
 	public boolean insert(Customer newEntry) {
-//		System.out.println(newEntry.getCustomerID()+ "try");
-//		System.out.println(size);
 		if(table.contains(newEntry.getCustomerID())) {
 			return false;
 		}
