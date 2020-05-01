@@ -1,6 +1,10 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -31,7 +35,6 @@ public class Customer {
 	private Pants pants;
 	private Dress dress;
 	private Shoe shoe;
-	private Coat coat;
 
 	public Customer(String name, String customerID, String password, ArrayList<String> shared,
 			ArrayList<String> recieved) {
@@ -58,20 +61,12 @@ public class Customer {
 		shoe = new Shoe();
 	}
 
-	// Likely unnecessary, done through CustomerTable
-	/**
-	 * @param ID
-	 * @return
-	 */
-//	public boolean share(String ID) {
-//		
-//	}
-
 	/**
 	 * Updates clothing info based on JSON file
 	 * 
 	 * @param jsonFilepath
 	 */
+<<<<<<< HEAD
 	public void readFile(String jsonFilepath) {
 		JSONParser jsonParser = new JSONParser();
        
@@ -153,18 +148,109 @@ public class Customer {
     		Table.currentCustomer.update(clothes);
     		Table.currentCustomer.setID(ID);
     		Table.currentCustomer.setPassword(pw);
+=======
+	public void readFile(JSONObject jo) {
+		// Get the package
+		JSONArray packages = (JSONArray) jo.get("packages");
+		// Get the customer's name
+		JSONObject customer = (JSONObject) packages.get(0);
+		// Put the customer name in a String
+		String customerName = (String) customer.get("name");
+		// Get the following customer's information
+		JSONArray customerInformation = (JSONArray) packages.get(1);
+		// Get the gender info from the customer
+		JSONObject gender = (JSONObject) customerInformation.get(0);
+		// Put the gender info in a String
+		String customerGender = (String) gender.get("gender");
+		// Get the clothes types as a JSON Array
+		JSONArray clothesTypes = (JSONArray) customerInformation.get(1);
+		// Deep in clothes types (Not sure about this actually. Do we just need to
+		// Print out the info or store those values. Since I am not sure if we need
+		// to add more based on the example JSON file, I will just print it by using
+		// iterator.
+		for (int i = 0; i < clothesTypes.size(); i++) {
+			JSONArray clothes = (JSONArray) packages.get(i);
+			Iterator iterator = clothes.iterator();
+			while (iterator.hasNext()) {
+				System.out.println(iterator.next());
+			}
+		}
+		JSONArray sharedPeople = (JSONArray) customerInformation.get(2);
+		JSONArray givenPeople = (JSONArray) customerInformation.get(3);
+>>>>>>> 91051161894bf06e3950edf86452c84d04d4451f
 	}
-	
-	public void setCustomerID(String ID) {
-		this.CustomerID = ID;
+
+	public JSONObject generateJSON() {
+		JSONObject jsonObject = new JSONObject();
+		JSONArray customer = new JSONArray();
+		JSONObject name = new JSONObject();
+		JSONObject customerID = new JSONObject();
+		JSONObject password = new JSONObject();
+		JSONObject information = new JSONObject();
+		JSONArray informationArray = new JSONArray();
+		JSONObject clothes = new JSONObject();
+		JSONArray clothesArray = new JSONArray();
+		JSONArray shirt = new JSONArray();
+		JSONObject shirtObj = new JSONObject();
+		JSONObject pantsObj = new JSONObject();
+		JSONArray pants = new JSONArray();
+		JSONObject dress = new JSONObject();
+		JSONObject shoe = new JSONObject();
+		JSONObject sharedObj = new JSONObject();
+		JSONObject givenObj = new JSONObject();
+		JSONArray shared = new JSONArray();
+		JSONArray given = new JSONArray();
+		shirt.add(this.shirt.sleeve);
+		shirt.add(this.shirt.collar);
+		try {
+			shirt.add(this.shirt.fit);
+		} catch (NullPointerException e) {
+			shirt.add(0);
+		}
+		pants.add(this.pants.inseem);
+		pants.add(this.pants.waist);
+		dress.put("dress", this.dress.size);
+		shoe.put("shoe", this.shoe.size);
+		shirtObj.put("shirt", shirt);
+		pantsObj.put("pants", pants);
+		clothesArray.add(shirtObj);
+		clothesArray.add(pantsObj);
+		clothesArray.add(dress);
+		clothesArray.add(shoe);
+		clothes.put("clothes", clothesArray);
+		informationArray.add(clothes);
+		name.put("name", this.name);
+		name.put("information", informationArray);
+		name.put("customerID", this.CustomerID);
+		name.put("password", this.Password);
+//		customer.add(customerID);
+//		customer.add(password);
+//		customer.add(information);
+		for (int k = 0; k < this.Shared.size(); k++) {
+			shared.add(Shared.get(k));
+		}
+		for (int k = 0; k < this.Received.size(); k++) {
+			given.add(Received.get(k));
+		}
+		name.put("given", given);
+		name.put("shared", shared);
+//		customer.add(sharedObj);
+//		customer.add(givenObj);
+		customer.add(name);
+
+		jsonObject.put("packages", customer);
+		try {
+			FileWriter file = new FileWriter(this.CustomerID + ".JSON");
+			file.write(jsonObject.toJSONString());
+			file.close();
+		} catch (IOException e) {
+			System.out.println("failed");
+		}
+		return jsonObject;
 	}
 
 	public String getCustomerID() {
 		return CustomerID;
-	}
-
-	public void setPassword(String pw) {
-		this.Password = pw;
 	}
 
 	public String getPassword() {
@@ -269,7 +355,6 @@ public class Customer {
 		return ret;
 	}
 
-
 	public Shirt getShirt() {
 		return shirt;
 	}
@@ -302,8 +387,17 @@ public class Customer {
 		this.shoe = shoe;
 	}
 
+	public void setCustomerID(String customerID) {
+		CustomerID = customerID;
+	}
+
+	public void setPassword(String password) {
+		Password = password;
+	}
+
 	/**
 	 * Updates Customer based on String array
+	 * 
 	 * @param measurements
 	 */
 	public void update(String[] measurements) {

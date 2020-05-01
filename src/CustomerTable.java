@@ -135,5 +135,8 @@ public class CustomerTable {
 	public void clearCurrentCustomer() {
 		currentCustomer = null;
 	}
+	public void remove(Customer currentCustomer2) {
+		table.remove(currentCustomer2.getCustomerID());
+	}
 
 }
