@@ -10,3 +10,5 @@ Team Members:
 4. Ethan Sun, lec 2, ysun269@wisc.edu
 
 Benjamin, David, and Baiying were on x204 together
+
+Notes:
